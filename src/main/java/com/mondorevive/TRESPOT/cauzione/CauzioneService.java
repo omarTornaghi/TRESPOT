@@ -525,6 +525,6 @@ public class CauzioneService {
                 request.getEpcTagList().stream().filter(x -> cauzioneList.stream().filter(y -> y.getEpcTag().equals(x)).findFirst().isEmpty()).toList();
         System.out.println("Trespoli non trovati: ");
         trespoliNonTrovati.forEach(System.out::println);
-        trespoliNonTrovati.forEach(x -> out.add(new ValidateResponse(x," TAG_NON_ASSOCIATO ",true,"Il Tag non è associato ad alcun bancale")));
+        trespoliNonTrovati.forEach(x -> out.add(new ValidateResponse(x,"TAG_NON_ASSOCIATO",true,"Il Tag non è associato ad alcun bancale")));
     }
 }
