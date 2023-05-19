@@ -1,5 +1,6 @@
 package com.mondorevive.TRESPOT.responses;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,11 +10,12 @@ import java.util.List;
 //Risposta ValidateEpcTag - sw Silvano
 @Getter
 @Setter
+@AllArgsConstructor
 public class ValidateResponse {
-    private boolean tagExists;
-    private List<ValidateTrespoliResponse> trespoli = new LinkedList<>();
+    private String epcTag;
+    //Sarebbe la matricola
 
-    public void addTrespolo(ValidateTrespoliResponse trespolo){
-        trespoli.add(trespolo);
-    }
+    private String embyonPalletCode;
+    private boolean daRevisionare;
+    private String messaggio;
 }

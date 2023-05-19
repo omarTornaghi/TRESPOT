@@ -457,7 +457,7 @@ public class CauzioneService {
                 cauzione.getStatoCauzione().getCodice());
     }
 
-    public ValidateResponse validateEpcTag(ValidateEpcTagRequest request) {
+    public List<ValidateResponse> validateEpcTag(ValidateEpcTagRequest request) {
         //NB. Utilizzato da SW SILVANO CATTANEO
         //Elimino TAG duplicati
         Set<String> set = new HashSet<>(request.getEpcTagList());
@@ -468,9 +468,9 @@ public class CauzioneService {
         throw new InvalidRequestException("Direzione " + request.getDirection() + " non supportata");
     }
 
-    private ValidateResponse varcoCarica(ValidateEpcTagRequest request) {
+    private List<ValidateResponse> varcoCarica(ValidateEpcTagRequest request) {
         List<Cauzione> cauzioneList = cauzioneRepository.getCauzioniListWithStatoAndMagazzinoByEpcTagList(request.getEpcTagList());
-        ValidateResponse response = new ValidateResponse();
+        List<ValidateResponse> out = new LinkedList<>();
         for(Cauzione cauzione : cauzioneList){
             List<Bobina> bobineAssociate = bobinaService.getBobineAssociate(cauzione.getId());
             Magazzino magazzino;
@@ -486,16 +486,16 @@ public class CauzioneService {
                 statoCauzione = statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO);
             }
             cauzioneRepository.updateCauzione(cauzione.getId(),magazzino.getId(),statoCauzione.getId());
-            response.addTrespolo(new ValidateTrespoliResponse(cauzione.getEpcTag(),null));
+            out.add(new ValidateResponse(cauzione.getEpcTag(),cauzione.getMatricola(), false,"OK"));
             storicoCauzioneService.aggiungiStorico(cauzione,statoCauzione,magazzino,null,TipoOperazione.CARICO_VARCO,null);
         }
-        setTrespoliNonTrovati(request, cauzioneList, response);
-        return response;
+        setTrespoliNonTrovati(request, cauzioneList, out);
+        return out;
     }
 
-    private ValidateResponse varcoScarica(ValidateEpcTagRequest request) {
+    private List<ValidateResponse> varcoScarica(ValidateEpcTagRequest request) {
         List<Cauzione> cauzioneList = cauzioneRepository.getCauzioniListWithStatoAndMagazzinoByEpcTagList(request.getEpcTagList());
-        ValidateResponse response = new ValidateResponse();
+        List<ValidateResponse> out = new LinkedList<>();
         Magazzino magazzino = varcoService.getVarcoById(request.getGateId()).getMagazzinoScarico();
         for (Cauzione cauzione : cauzioneList){
             List<Bobina> bobineAssociate = bobinaService.getBobineAssociate(cauzione.getId());
@@ -511,20 +511,20 @@ public class CauzioneService {
                 bobinaService.rimuoviBobineAssociateByIdCauzione(cauzione.getId());
             }
             cauzioneRepository.updateCauzione(cauzione.getId(),magazzino.getId(),statoCauzione.getId());
-            response.addTrespolo(new ValidateTrespoliResponse(cauzione.getEpcTag(),TipoStatoCauzione.valueOf(statoCauzione.getCodice()).equals(TipoStatoCauzione.IN_MANUTENZIONE) ? "DA_MANUTENERE" : null));
+            boolean daRevisionare = TipoStatoCauzione.valueOf(statoCauzione.getCodice()).equals(TipoStatoCauzione.IN_MANUTENZIONE);
+            out.add(new ValidateResponse(cauzione.getEpcTag(),cauzione.getMatricola(),daRevisionare,daRevisionare ? "Trespolo da revisionare" : "OK"));
             storicoCauzioneService.aggiungiStorico(cauzione,statoCauzione,magazzino,null,TipoOperazione.SCARICO_VARCO,null);
         }
-        setTrespoliNonTrovati(request, cauzioneList, response);
-        return response;
+        setTrespoliNonTrovati(request, cauzioneList, out);
+        return out;
     }
 
-    private void setTrespoliNonTrovati(ValidateEpcTagRequest request, List<Cauzione> cauzioneList, ValidateResponse response) {
+    private void setTrespoliNonTrovati(ValidateEpcTagRequest request, List<Cauzione> cauzioneList, List<ValidateResponse> out) {
         //Se non ho processato alcuni trespoli li metto nella response aggiungendoli con errore NON_TROVATO
         List<String> trespoliNonTrovati =
                 request.getEpcTagList().stream().filter(x -> cauzioneList.stream().filter(y -> y.getEpcTag().equals(x)).findFirst().isEmpty()).toList();
         System.out.println("Trespoli non trovati: ");
         trespoliNonTrovati.forEach(System.out::println);
-        trespoliNonTrovati.forEach(x -> response.addTrespolo(new ValidateTrespoliResponse(x,"NON_TROVATO")));
-        response.setTagExists(response.getTrespoli().stream().filter(x -> x.getEmbyonPalletCode() != null).findFirst().isEmpty());
+        trespoliNonTrovati.forEach(x -> out.add(new ValidateResponse(x," TAG_NON_ASSOCIATO ",true,"Il Tag non è associato ad alcun bancale")));
     }
 }
