@@ -1,0 +1,8 @@
+[
+  {"codice": "BA", "descrizione":  "STAB. BUSTO ARSIZIO", "codiceSistemaEsterno": "EMBYON_MONDOREVIVE"},
+  {"codice": "FE", "descrizione":  "STAB. FERENTINO","codiceSistemaEsterno": "EMBYON_MONDOREVIVE"},
+  {"codice": "CH", "descrizione":  "STAB. CHIGNOLO PO'","codiceSistemaEsterno": "EMBYON_CALTEK"},
+  {"codice": "BE", "descrizione":  "STAB. BERNATE TICINO","codiceSistemaEsterno": "NESSUNO"},
+  {"codice": "MA", "descrizione":  "STAB. MARNATE","codiceSistemaEsterno": "NESSUNO"},
+  {"codice": "NESSUNO", "descrizione": "STAB. DEFAULT PER MAGAZZINO FUORI", "codiceSistemaEsterno": "NESSUNO"}
+]

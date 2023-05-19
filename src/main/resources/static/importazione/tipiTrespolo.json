@@ -1,0 +1,126 @@
+[
+  {
+    "codiceVecchio": "0",
+    "descrizione": "NON INDICATO",
+    "codice": "ITR#000"
+  },
+  {
+    "codiceVecchio": "1",
+    "descrizione": "TRESPOLO ROSSO FISSO",
+    "codice": "ITR#001",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "1000"
+  },
+  {
+    "codiceVecchio": "2",
+    "descrizione": "TRESPOLO ARANCIONE FISSO",
+    "codice": "ITR#002",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "1000"
+  },
+  {
+    "codiceVecchio": "3",
+    "descrizione": "LYCOPALLET GRIGIO",
+    "codice": "ITR#003",
+    "numeroMaxBobine": "1",
+    "numeroMaxKg": "1100"
+  },
+  {
+    "codiceVecchio": "4",
+    "descrizione": "TRESPOLO VERDE FISSO",
+    "codice": "ITR#004",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "800"
+  },
+  {
+    "codiceVecchio": "9",
+    "descrizione": "LYCOPALLET ULTRA X 2",
+    "codice": "ITR#009",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "1200"
+  },
+  {
+    "codiceVecchio": "11",
+    "descrizione": "LYCOPALLET AZZURRO",
+    "codice": "ITR#011",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "1200"
+  },
+  {
+    "codiceVecchio": "12",
+    "descrizione": "LYCOPALLET VERDE",
+    "codice": "ITR#012",
+    "numeroMaxBobine": "1",
+    "numeroMaxKg": "1200"
+  },
+  {
+    "codiceVecchio": "13",
+    "descrizione": "LYCOPALLET BLU",
+    "codice": "ITR#013",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "800"
+  },
+  {
+    "codiceVecchio": "16",
+    "descrizione": "LYCOPALLET NERO",
+    "codice": "ITR#016",
+    "numeroMaxBobine": "1",
+    "numeroMaxKg": "800"
+  },
+  {
+    "codiceVecchio": "22",
+    "descrizione": "LYCOPALLET ARANCIONE",
+    "codice": "ITR#022",
+    "numeroMaxBobine": "1",
+    "numeroMaxKg": "1300"
+  },
+  {
+    "codiceVecchio": "25",
+    "descrizione": "TRESPOLO GRIGIO FISSO",
+    "codice": "ITR#025",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "1200"
+  },
+  {
+    "codiceVecchio": "26",
+    "descrizione": "LYCOPALLET ULTRA X 4",
+    "codice": "ITR#026",
+    "numeroMaxBobine": "4",
+    "numeroMaxKg": "1600"
+  },
+  {
+    "codiceVecchio": "27",
+    "descrizione": "LYCOPALLET ROSSO",
+    "codice": "ITR#027",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "1000"
+  },
+  {
+    "codiceVecchio": "28",
+    "descrizione": "TRESPOLO PALLET PORTA BOBINE BLU x 2",
+    "codice": "ITR#028",
+    "numeroMaxBobine": "2",
+    "numeroMaxKg": "1000"
+  },
+  {
+    "codiceVecchio": "29",
+    "descrizione": "TRESPOLO PALLET PORTA BOBINE ROSA x 1",
+    "codice": "ITR#029",
+    "numeroMaxBobine": "1",
+    "numeroMaxKg": "1000"
+  },
+  {
+    "codiceVecchio": "31",
+    "descrizione": "TRESPOLO INTERNO BIMEC",
+    "codice": "ITR#031",
+    "numeroMaxBobine": "3",
+    "numeroMaxKg": "1000"
+  },
+  {
+    "codiceVecchio": "32",
+    "descrizione": "TRESPOLO INTERNO OFFRI",
+    "codice": "ITR#032",
+    "numeroMaxBobine": "3",
+    "numeroMaxKg": "1000"
+  }
+]

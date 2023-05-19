@@ -1,0 +1,110 @@
+[
+  {
+    "nome": "-",
+    "cognome": "-",
+    "username": "admin",
+    "password": "admin",
+    "ruolo": "AMMINISTRATORE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA","FE","CH","BE","MA"]
+  },
+  {
+    "nome": "Stefano",
+    "cognome": "Bertolani",
+    "username": "sbertolani",
+    "password": "stefano",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Paolo",
+    "cognome": "Cocchi",
+    "username": "pcocchi",
+    "password": "paolo",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Matteo",
+    "cognome": "Mambretti",
+    "username": "mmambretti",
+    "password": "Matteo",
+    "ruolo": "UFFICIO",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Mario",
+    "cognome": "Monza",
+    "username": "mmonza",
+    "password": "Mario",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Alessio",
+    "cognome": "Tornaghi",
+    "username": "atornaghi",
+    "password": "Omar2000",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Francesco",
+    "cognome": "Loiero",
+    "username": "floiero",
+    "password": "Francesco",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Massimo",
+    "cognome": "Amboldi",
+    "username": "mamboldi",
+    "password": "Massimo",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Gerardo",
+    "cognome": "Nuvoletto",
+    "username": "gnuvoletto",
+    "password": "Gerardo",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Marco",
+    "cognome": "Castiglioni",
+    "username": "mcastiglioni",
+    "password": "Marco",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Carlo",
+    "cognome": "Lasala",
+    "username": "clasala",
+    "password": "carlo",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  },
+  {
+    "nome": "Alfonso",
+    "cognome": "Occhineri",
+    "username": "aocchineri",
+    "password": "Alfonso",
+    "ruolo": "MANUTENZIONE",
+    "magazzino": "BA - BUSTO ARSIZIO",
+    "stabilimenti": ["BA"]
+  }
+]
