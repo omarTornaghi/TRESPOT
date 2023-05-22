@@ -78,8 +78,7 @@ public class PianoRevisioneService {
 
     @Transactional(readOnly = true)
     public Boolean isCauzioneDaManutenere(CategoriaCauzione categoriaCauzione, LocalDateTime dataAcquisto, Optional<Revisione> ultimaRevisioneOptional) {
-        if(ultimaRevisioneOptional.isEmpty())return true;
-        Revisione ultimaRevisione = ultimaRevisioneOptional.get();
+        LocalDateTime ultimaDataRevisione = ultimaRevisioneOptional.isPresent() ? ultimaRevisioneOptional.get().getDataRevisione() : dataAcquisto;
         List<FrequenzaRevisione> frequenzeList =
                 frequenzaRevisioneService.getFrequenzeRevisioneByIdPianoRevisione(categoriaCauzione.getPianoRevisione().getId());
         LocalDateTime adesso = DateUtils.getTimestampCorrente();
@@ -91,7 +90,7 @@ public class PianoRevisioneService {
         //Se non trovo lo scaglione ritorno true
         if(first.isEmpty()) return true;
         FrequenzaRevisione frequenzaRevisione = first.get();
-        long anniDiffUltimaRevisione = ChronoUnit.YEARS.between(ultimaRevisione.getDataRevisione(), adesso);
+        long anniDiffUltimaRevisione = ChronoUnit.YEARS.between(ultimaDataRevisione, adesso);
         //Se è passato meno è uguale in anni rispetto alla frequenza, siamo a posto, altrimenti ritorno true
         //Se devo farla ogni due anni e sono passati due anni allora setto true
         return frequenzaRevisione.getFrequenza() < anniDiffUltimaRevisione;
