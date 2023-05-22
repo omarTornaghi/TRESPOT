@@ -38,6 +38,12 @@ public class TipologiaCauzioneController {
         return ResponseEntity.ok(tipologiaCauzioneService.getDettaglioById(id));
     }
 
+    @GetMapping("/getTypeList")
+    public ResponseEntity<Object>getAllTypes(){
+        log.info(CONTROLLER_TAG + "GET getTypeList");
+        return ResponseEntity.ok(tipologiaCauzioneService.getTypeList());
+    }
+
     @PostMapping("/nuovaTipologiaCauzione")
     public ResponseEntity<Object>salvaNuovaTipologiaCauzione(@Valid @RequestBody CreaNuovaTipologiaCauzioneRequest request){
         log.info(CONTROLLER_TAG + "POST nuovaTipologiaCauzione");

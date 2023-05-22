@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public interface TipologiaCauzioneRepository extends JpaRepository<TipologiaCauzione, Long> {
     @Query("select new com.mondorevive.TRESPOT.responses.GetAllTipologieCauzioneResponse(t.id,t.codice,t.descrizione,t.numeroCauzioniMassimo,t.numeroKgMassimo,c.id,c.codice) " +
@@ -23,4 +24,7 @@ public interface TipologiaCauzioneRepository extends JpaRepository<TipologiaCauz
 
     @Query("select tc from TipologiaCauzione tc order by tc.codice")
     List<TipologiaCauzione> findAllTipologieCauzioneSelect();
+
+    @Query("select tc,cc from TipologiaCauzione tc inner join tc.categoriaCauzione cc where tc.codice like :codice")
+    Optional<TipologiaCauzione> findByCodice(String codice);
 }

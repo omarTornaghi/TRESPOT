@@ -2,7 +2,6 @@ package com.mondorevive.TRESPOT.controllers;
 
 import com.mondorevive.TRESPOT.requests.NuovoVarcoRequest;
 import com.mondorevive.TRESPOT.requests.UpdateVarcoRequest;
-import com.mondorevive.TRESPOT.requests.ValidateEpcTagRequest;
 import com.mondorevive.TRESPOT.varco.VarcoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.mondorevive.TRESPOT.requests;
+package com.mondorevive.TRESPOT.requests.silvanoCattaneo;
 
 import lombok.Getter;
 import lombok.Setter;

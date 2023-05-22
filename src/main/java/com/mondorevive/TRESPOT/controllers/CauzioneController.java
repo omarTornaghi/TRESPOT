@@ -2,7 +2,7 @@ package com.mondorevive.TRESPOT.controllers;
 
 import com.mondorevive.TRESPOT.cauzione.CauzioneService;
 import com.mondorevive.TRESPOT.requests.*;
-import com.mondorevive.TRESPOT.responses.ValidateResponse;
+import com.mondorevive.TRESPOT.requests.silvanoCattaneo.*;
 import com.mondorevive.TRESPOT.utils.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +72,7 @@ public class CauzioneController {
         log.info("epcTag = " + epcTag);
         return ResponseEntity.ok(cauzioneService.getTagInfo(epcTag));
     }
+
     @PostMapping("/cauzioni")
     public ResponseEntity<Object>getAllCauzioni(@Valid @RequestBody PaginationRequest request){
         log.info(CONTROLLER_TAG + "POST cauzioni");
@@ -141,5 +142,29 @@ public class CauzioneController {
     public ResponseEntity<Object> validateEpcTag(@RequestBody ValidateEpcTagRequest response){
         log.info(CONTROLLER_TAG + "POST validateEpcTag");
         return ResponseEntity.ok(cauzioneService.validateEpcTag(response));
+    }
+
+    @PostMapping("/tagInitialize")
+    public ResponseEntity<Object> tagInitialize(@Valid @RequestBody TagInitializeRequest request){
+        log.info(CONTROLLER_TAG + "POST tagInitialize");
+        return ResponseEntity.ok(cauzioneService.tagInitialize(request));
+    }
+
+    @PostMapping("/tagRevision")
+    public ResponseEntity<Object> tagRevision(@Valid @RequestBody TagRevisionRequest request){
+        log.info(CONTROLLER_TAG + "POST tagRevision");
+        return ResponseEntity.ok(cauzioneService.tagRevision(request));
+    }
+
+    @PostMapping("/tagUpdateAssociation")
+    public ResponseEntity<Object> tagUpdateAssociation(@Valid @RequestBody TagUpdateAssociationRequest request){
+        log.info(CONTROLLER_TAG + "POST tagUpdateAssociation");
+        return ResponseEntity.ok(cauzioneService.tagUpdateAssociation(request));
+    }
+
+    @PostMapping("/tagUpdateTipoTrespolo")
+    public ResponseEntity<Object> tagUpdateTipoTrespolo(@Valid @RequestBody TagUpdateTipoTrespolo request){
+        log.info(CONTROLLER_TAG + "POST tagUpdateTipoTrespolo");
+        return ResponseEntity.ok(cauzioneService.tagUpdateTipoTrespolo(request));
     }
 }

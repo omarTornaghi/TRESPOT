@@ -1,4 +1,4 @@
-package com.mondorevive.TRESPOT.responses;
+package com.mondorevive.TRESPOT.responses.silvanoCattaneo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

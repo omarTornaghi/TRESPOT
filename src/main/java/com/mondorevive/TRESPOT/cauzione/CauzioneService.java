@@ -20,7 +20,9 @@ import com.mondorevive.TRESPOT.pianoRevisione.PianoRevisioneService;
 import com.mondorevive.TRESPOT.pianoRevisione.revisione.Revisione;
 import com.mondorevive.TRESPOT.pojo.UltimoCaricoCauzione;
 import com.mondorevive.TRESPOT.requests.*;
+import com.mondorevive.TRESPOT.requests.silvanoCattaneo.*;
 import com.mondorevive.TRESPOT.responses.*;
+import com.mondorevive.TRESPOT.responses.silvanoCattaneo.ValidateResponse;
 import com.mondorevive.TRESPOT.responses.standardSelect.EntitySelect;
 import com.mondorevive.TRESPOT.responses.silvanoCattaneo.GetTagInfoResponse;
 import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.SistemaEsterno;
@@ -28,6 +30,7 @@ import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.SistemaEsternoProvide
 import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.TipoSistemaEsterno;
 import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.interfaces.BobinaProvider;
 import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.interfaces.DatiBobina;
+import com.mondorevive.TRESPOT.tipologiaCauzione.TipologiaCauzione;
 import com.mondorevive.TRESPOT.tipologiaCauzione.TipologiaCauzioneService;
 import com.mondorevive.TRESPOT.utente.Utente;
 import com.mondorevive.TRESPOT.utente.UtenteService;
@@ -526,5 +529,51 @@ public class CauzioneService {
         System.out.println("Trespoli non trovati: ");
         trespoliNonTrovati.forEach(System.out::println);
         trespoliNonTrovati.forEach(x -> out.add(new ValidateResponse(x,"TAG_NON_ASSOCIATO",true,"Il Tag non è associato ad alcun bancale")));
+    }
+
+    public ValidateResponse tagInitialize(TagInitializeRequest request) {
+        String s = DateUtils.fromLocalDateTimeToItalianStringPattern(request.getPurchaseDate());
+        System.out.println("s = " + s);
+        Magazzino magazzino = magazzinoService.getById(request.getSiteId());
+        StatoCauzione statoCauzione = statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO);
+        Cauzione cauzione = new Cauzione(request.getEpcTagId(),request.getPalletCode(),request.getPurchaseDate(),tipologiaCauzioneService.getByCodice(request.getEmbyonPalletCode()),magazzino,statoCauzione);
+        try {
+            cauzioneRepository.save(cauzione);
+            storicoCauzioneService.aggiungiStorico(cauzione,statoCauzione,magazzino,null,TipoOperazione.CREAZIONE,null);
+            return new ValidateResponse(cauzione.getEpcTag(),cauzione.getMatricola(),false,"OK");
+        }
+        catch (EntityNotFoundException ex){
+            throw ex;
+        }
+        catch (Exception ex){
+            throw new InvalidRequestException("Impossibile creare la cauzione, epcTag duplicato o matricola duplicata");
+        }
+    }
+
+    public ValidateResponse tagRevision(TagRevisionRequest request) {
+        Cauzione cauzione = getSezioneDatiCauzioneByText(request.getEpcTagId()).orElseThrow(() -> new EntityNotFoundException("Cauzione " + request.getEpcTagId() + " non trovata"));
+        StatoCauzione statoCauzione = statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO);
+        Magazzino magazzino = magazzinoService.getById(request.getSiteId());
+        cauzioneRepository.updateCauzione(cauzione.getId(),request.getSiteId(),statoCauzione.getId());
+        storicoCauzioneService.aggiungiStorico(cauzione,statoCauzione,magazzino,null,TipoOperazione.RIPARAZIONE,null);
+        return new ValidateResponse(request.getEpcTagId(), cauzione.getMatricola(),false,"OK");
+    }
+
+    public ValidateResponse tagUpdateAssociation(TagUpdateAssociationRequest request) {
+        Cauzione cauzione = getSezioneDatiCauzioneByText(request.getPalletCode()).orElseThrow(() -> new EntityNotFoundException("Cauzione " + request.getPalletCode() + " non trovata"));
+        cauzioneRepository.updateCauzione(request.getPalletCode(),request.getNewEpcTagId(),request.getSiteId());
+        cauzione.setEpcTag(request.getNewEpcTagId());
+        storicoCauzioneService.aggiungiStorico(cauzione,cauzione.getStatoCauzione(),magazzinoService.getById(request.getSiteId()),null,TipoOperazione.AGGIORNAMENTO_MANUALE,null);
+        return new ValidateResponse(request.getNewEpcTagId(),request.getPalletCode(),false,"OK");
+    }
+
+    public ValidateResponse tagUpdateTipoTrespolo(TagUpdateTipoTrespolo request) {
+        Cauzione cauzione = getSezioneDatiCauzioneByText(request.getEpcTagId()).orElseThrow(() -> new EntityNotFoundException("Cauzione " + request.getEpcTagId() + " non trovata"));
+        TipologiaCauzione tipologiaCauzione = tipologiaCauzioneService.getByCodice(request.getTipoTrespolo());
+        Magazzino magazzino = magazzinoService.getById(request.getSiteId());
+        cauzioneRepository.updateCauzione(request.getEpcTagId(),tipologiaCauzione.getId(), magazzino.getId());
+        cauzione.setTipologiaCauzione(tipologiaCauzione);
+        storicoCauzioneService.aggiungiStorico(cauzione,cauzione.getStatoCauzione(),magazzino,null,TipoOperazione.AGGIORNAMENTO_MANUALE,null);
+        return new ValidateResponse(request.getEpcTagId(),cauzione.getMatricola(),false,"OK");
     }
 }

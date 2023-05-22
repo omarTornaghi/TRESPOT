@@ -60,4 +60,13 @@ public class TipologiaCauzioneService {
         salva(trespolo);
         return trespolo;
     }
+
+    @Transactional(readOnly = true)
+    public TipologiaCauzione getByCodice(String codice) {
+        return tipologiaCauzioneRepository.findByCodice(codice).orElseThrow(() -> new EntityNotFoundException("Tipologia cauzione -" + codice + "- non trovata"));
+    }
+    @Transactional(readOnly = true)
+    public List<String> getTypeList() {
+        return tipologiaCauzioneRepository.findAll().stream().map(TipologiaCauzione::getCodice).sorted().collect(Collectors.toList());
+    }
 }
