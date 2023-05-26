@@ -455,7 +455,7 @@ public class CauzioneService {
         //NB. Utilizzato da SW SILVANO CATTANEO
         Cauzione cauzione = getSezioneDatiCauzioneByText(epcTag).orElseThrow(() -> new EntityNotFoundException("Cauzione " + epcTag + " non trovata"));
         Optional<Revisione> ultimaRevisione = storicoCauzioneService.getUltimaRevisione(cauzione.getId());
-        return new GetTagInfoResponse(cauzione.getEpcTag(),cauzione.getTipologiaCauzione().getCodice(),
+        return new GetTagInfoResponse(cauzione.getEpcTag(),cauzione.getTipologiaCauzione().getCodiceTerminalino(),
                 cauzione.getTimestampAcquisto(), ultimaRevisione.map(Revisione::getDataRevisione).orElse(null),
                 cauzione.getStatoCauzione().getCodice());
     }
@@ -536,7 +536,7 @@ public class CauzioneService {
         System.out.println("s = " + s);
         Magazzino magazzino = magazzinoService.getById(request.getSiteId());
         StatoCauzione statoCauzione = statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO);
-        Cauzione cauzione = new Cauzione(request.getEpcTagId(),request.getPalletCode(),request.getPurchaseDate(),tipologiaCauzioneService.getByCodice(request.getEmbyonPalletCode()),magazzino,statoCauzione);
+        Cauzione cauzione = new Cauzione(request.getEpcTagId(),request.getPalletCode(),request.getPurchaseDate(),tipologiaCauzioneService.getByCodice("ITR#" + request.getEmbyonPalletCode()),magazzino,statoCauzione);
         try {
             cauzioneRepository.save(cauzione);
             storicoCauzioneService.aggiungiStorico(cauzione,statoCauzione,magazzino,null,TipoOperazione.CREAZIONE,null);
@@ -569,7 +569,7 @@ public class CauzioneService {
 
     public ValidateResponse tagUpdateTipoTrespolo(TagUpdateTipoTrespolo request) {
         Cauzione cauzione = getSezioneDatiCauzioneByText(request.getEpcTagId()).orElseThrow(() -> new EntityNotFoundException("Cauzione " + request.getEpcTagId() + " non trovata"));
-        TipologiaCauzione tipologiaCauzione = tipologiaCauzioneService.getByCodice(request.getTipoTrespolo());
+        TipologiaCauzione tipologiaCauzione = tipologiaCauzioneService.getByCodice("ITR#" + request.getTipoTrespolo());
         Magazzino magazzino = magazzinoService.getById(request.getSiteId());
         cauzioneRepository.updateCauzione(request.getEpcTagId(),tipologiaCauzione.getId(), magazzino.getId());
         cauzione.setTipologiaCauzione(tipologiaCauzione);

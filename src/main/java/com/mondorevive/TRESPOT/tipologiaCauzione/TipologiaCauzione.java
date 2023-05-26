@@ -57,4 +57,7 @@ public class TipologiaCauzione implements Selectable {
     public EntitySelect convertToSelectableEntity() {
         return new EntitySelect(id, codice + " - " + descrizione);
     }
+    public String getCodiceTerminalino() {
+       return this.codice.replace("ITR#", "");
+    }
 }
