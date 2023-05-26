@@ -15,7 +15,7 @@ public interface RevisioneRepository extends JpaRepository<Revisione, Long> {
     Optional<Revisione> getUltimaRevisione(Long idCauzione);
     
     @Query("select new com.mondorevive.TRESPOT.responses.DettaglioRevisioneResponse(" +
-            "c.id,c.epcTag,c.matricola,stato.codice,m.descrizione," +
+            "c.id,c.epcTag,c.matricola,stato.codice,m.descrizione,tc.descrizione," +
             "r.id,r.dataRevisione,r.conformitaTotale," +
             "r.targaPresente," +
             "r.conformitaDisegnoTecnico," +
@@ -33,6 +33,7 @@ public interface RevisioneRepository extends JpaRepository<Revisione, Long> {
             "from Revisione r inner join r.storicoCauzione sc " +
             "inner join sc.utente u " +
             "inner join sc.cauzione c " +
+            "inner join c.tipologiaCauzione tc " +
             "inner join c.statoCauzione stato " +
             "inner join c.magazzino m " +
             "where r.id = :id")

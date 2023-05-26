@@ -169,7 +169,7 @@ public class CauzioneService {
         Optional<Cauzione> cauzioneOptional = getSezioneDatiCauzioneByText(text);
         if(cauzioneOptional.isEmpty()) return new SezioneDatiCauzioneResponse("NON_TROVATO_DA_RICERCA");
         Cauzione cauzione = cauzioneOptional.get();
-        return new SezioneDatiCauzioneResponse(cauzione.getId(), cauzione.getEpcTag(),cauzione.getMatricola(),cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getDescrizione());
+        return new SezioneDatiCauzioneResponse(cauzione.getId(), cauzione.getEpcTag(),cauzione.getMatricola(),cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getDescrizione(),cauzione.getTipologiaCauzione().getDescrizione());
     }
     public void aggiungiNuovaRevisione(Long idCauzione, Revisione revisione, String username) {
         //Creare un nuovo oggetto storico e salvare
@@ -369,7 +369,7 @@ public class CauzioneService {
         Cauzione cauzione = sezioneDatiCauzioneByText.get();
         List<Bobina> bobineAssociate = bobinaService.getBobineAssociate(cauzione.getId());
         return new CauzioneWithBobineAssociateResponse(cauzione.getId(), cauzione.getEpcTag(),cauzione.getMatricola(),cauzione.getStatoCauzione().getId(),
-                cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getId(),cauzione.getMagazzino().getDescrizione(),cauzione.getTipologiaCauzione().getNumeroCauzioniMassimo(),
+                cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getId(),cauzione.getMagazzino().getDescrizione(),cauzione.getTipologiaCauzione().getId(),cauzione.getTipologiaCauzione().getDescrizione(),cauzione.getTipologiaCauzione().getNumeroCauzioniMassimo(),
                 bobineAssociate.stream().map(x -> new GetDettaglioBobineAssociateResponse(x.getId(),x.getCliente().getId(),x.getCodice(),x.getCliente().getCodice())).collect(Collectors.toList()));
     }
 

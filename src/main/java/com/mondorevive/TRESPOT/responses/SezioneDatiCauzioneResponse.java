@@ -14,7 +14,7 @@ public class SezioneDatiCauzioneResponse {
     private String matricola;
     private String codiceStato;
     private String descrizioneMagazzino;
-
+    private String descrizioneTipologiaCauzione;
     public SezioneDatiCauzioneResponse(String epcTag) {
         this.epcTag = epcTag;
     }

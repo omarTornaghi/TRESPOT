@@ -30,13 +30,13 @@ public class DettaglioRevisioneResponse{
     private String usernameRevisione;
 
     public DettaglioRevisioneResponse(Long idCauzione, String epcTag, String matricola, String codiceStato,
-                                      String descrizioneMagazzino, Long id, LocalDateTime dataRevisione,
+                                      String descrizioneMagazzino, String descrizioneTipologiaCauzione,Long id, LocalDateTime dataRevisione,
                                       Boolean conformitaTotale, String targaPresente, String conformitaDisegnoTecnico
             , String interventoMembrature, String descrizioneInterventoMembrature, String interventoSaldatura,
                                       String cernieraBullonata, String cattivoUsoInforcatura,
                                       String cattivoUsoCollisione, String altroIntervento, String stabilitaGlobale,
                                       String funzionamentoRfid, String ulterioriNote, String usernameRevisione) {
-        this.datiCauzione = new SezioneDatiCauzioneResponse(idCauzione, epcTag, matricola, codiceStato, descrizioneMagazzino);
+        this.datiCauzione = new SezioneDatiCauzioneResponse(idCauzione, epcTag, matricola, codiceStato, descrizioneMagazzino,descrizioneTipologiaCauzione);
         this.id = id;
         this.dataRevisione = dataRevisione;
         this.conformitaTotale = conformitaTotale;

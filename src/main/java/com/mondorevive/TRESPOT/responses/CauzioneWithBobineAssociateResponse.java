@@ -17,6 +17,8 @@ public class CauzioneWithBobineAssociateResponse {
     private String codiceStato;
     private Long idMagazzino;
     private String descrizioneMagazzino;
+    private Long idTipologiaCauzione;
+    private String descrizioneTipologiaCauzione;
     private Integer maxBobine;
     private List<GetDettaglioBobineAssociateResponse>codiciBobine;
 
