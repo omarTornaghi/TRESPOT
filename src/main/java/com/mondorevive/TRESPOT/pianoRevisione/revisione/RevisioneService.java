@@ -9,6 +9,7 @@ import com.mondorevive.TRESPOT.requests.OrdinamentoRequest;
 import com.mondorevive.TRESPOT.requests.PaginationRequest;
 import com.mondorevive.TRESPOT.responses.DettaglioRevisioneResponse;
 import com.mondorevive.TRESPOT.responses.GetAllRevisioniResponse;
+import com.mondorevive.TRESPOT.utils.DateUtils;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -16,6 +17,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,6 +58,16 @@ public class RevisioneService {
                         specification = specification.and(Specification.where(RevisioneSpecifications.idOperatoreEqual(filtro.getValore())));
                 case "conformitaTotale" ->
                         specification = specification.and(Specification.where(RevisioneSpecifications.conformitaTotaleEqual(filtro.getValore())));
+                case "dataInizio" -> {
+                    LocalDateTime dataInizio = DateUtils.getDataInizioDataFine(filtro.getValore(), filtro.getValore()).getDataInizio();
+                    System.out.println("dInizio=" + dataInizio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    specification = specification.and(Specification.where(RevisioneSpecifications.dataRevisioneDopo(dataInizio)));
+                }
+                case "dataFine" -> {
+                    LocalDateTime dataFine = DateUtils.getDataInizioDataFine(filtro.getValore(), filtro.getValore()).getDataFine();
+                    System.out.println("dFine=" +dataFine.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    specification = specification.and(Specification.where(RevisioneSpecifications.dataRevisionePrima(dataFine)));
+                }
             }
         }
         if(request.getOrdinamento() == null) request.setOrdinamento(new OrdinamentoRequest("storicoCauzione.timestampOperazione", "DESC"));

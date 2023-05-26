@@ -5,6 +5,8 @@ import jakarta.persistence.criteria.JoinType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
+
 public class RevisioneSpecifications {
     public static Specification<Revisione> epcTagContains(String valore) {
         return (root, query, builder) -> {
@@ -34,4 +36,13 @@ public class RevisioneSpecifications {
             return builder.equal(root.get("conformitaTotale"), Boolean.parseBoolean(valore));
         };
     }
+
+    public static Specification<Revisione> dataRevisioneDopo(LocalDateTime valore) {
+        return (root, query, builder) -> builder.greaterThanOrEqualTo(root.get("dataRevisione"),valore);
+    }
+
+    public static Specification<Revisione> dataRevisionePrima(LocalDateTime valore) {
+        return (root, query, builder) -> builder.lessThanOrEqualTo(root.get("dataRevisione"),valore);
+    }
+
 }
