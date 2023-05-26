@@ -67,6 +67,6 @@ public class TipologiaCauzioneService {
     }
     @Transactional(readOnly = true)
     public List<String> getTypeList() {
-        return tipologiaCauzioneRepository.findAll().stream().map(TipologiaCauzione::getCodiceTerminalino).sorted().collect(Collectors.toList());
+        return tipologiaCauzioneRepository.findAll().stream().map(x -> x.getCodiceTerminalino()+ "|" + x.getDescrizione()).sorted().collect(Collectors.toList());
     }
 }
