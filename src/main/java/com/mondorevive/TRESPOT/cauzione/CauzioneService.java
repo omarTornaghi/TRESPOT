@@ -455,7 +455,7 @@ public class CauzioneService {
         //NB. Utilizzato da SW SILVANO CATTANEO
         Cauzione cauzione = getSezioneDatiCauzioneByText(epcTag).orElseThrow(() -> new EntityNotFoundException("Cauzione " + epcTag + " non trovata"));
         Optional<Revisione> ultimaRevisione = storicoCauzioneService.getUltimaRevisione(cauzione.getId());
-        return new GetTagInfoResponse(cauzione.getEpcTag(),cauzione.getTipologiaCauzione().getCodiceTerminalino(),
+        return new GetTagInfoResponse(cauzione.getMatricola(),cauzione.getTipologiaCauzione().getCodiceTerminalino(),
                 cauzione.getTimestampAcquisto(), ultimaRevisione.map(Revisione::getDataRevisione).orElse(null),
                 cauzione.getStatoCauzione().getCodice());
     }
