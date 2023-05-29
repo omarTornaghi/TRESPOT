@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,6 +17,7 @@ public class SezioneDatiCauzioneResponse {
     private String codiceStato;
     private String descrizioneMagazzino;
     private String descrizioneTipologiaCauzione;
+    private LocalDateTime dataUltimaRevisione;
     public SezioneDatiCauzioneResponse(String epcTag) {
         this.epcTag = epcTag;
     }

@@ -19,6 +19,7 @@ public class Revisione {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "revisione_sequence")
     private Long id;
     private LocalDateTime dataRevisione;
+    private Boolean mancaAggiornamento;
     private Boolean conformitaTotale;
     private String targaPresente;
     private String conformitaDisegnoTecnico;
@@ -36,12 +37,13 @@ public class Revisione {
     @JoinColumn(name="storico_cauzione_id")
     private StoricoCauzione storicoCauzione;
 
-    public Revisione(LocalDateTime dataRevisione, Boolean conformitaTotale, String targaPresente,
+    public Revisione(LocalDateTime dataRevisione, Boolean mancaAggiornamento, Boolean conformitaTotale, String targaPresente,
                      String conformitaDisegnoTecnico, String interventoMembrature,
                      String descrizioneInterventoMembrature, String interventoSaldatura, String cernieraBullonata,
                      String cattivoUsoInforcatura, String cattivoUsoCollisione, String altroIntervento,
                      String stabilitaGlobale, String funzionamentoRfid, String ulterioriNote) {
         this.dataRevisione = dataRevisione;
+        this.mancaAggiornamento = mancaAggiornamento;
         this.conformitaTotale = conformitaTotale;
         this.targaPresente = targaPresente;
         this.conformitaDisegnoTecnico = conformitaDisegnoTecnico;

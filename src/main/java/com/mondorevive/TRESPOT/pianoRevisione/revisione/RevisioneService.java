@@ -9,6 +9,7 @@ import com.mondorevive.TRESPOT.requests.OrdinamentoRequest;
 import com.mondorevive.TRESPOT.requests.PaginationRequest;
 import com.mondorevive.TRESPOT.responses.DettaglioRevisioneResponse;
 import com.mondorevive.TRESPOT.responses.GetAllRevisioniResponse;
+import com.mondorevive.TRESPOT.responses.SezioneDatiCauzioneResponse;
 import com.mondorevive.TRESPOT.utils.DateUtils;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,8 @@ public class RevisioneService {
 
     @Transactional(readOnly = true)
     public Optional<Revisione> getUltimaRevisione(Long idCauzione) {
-        return revisioneRepository.getUltimaRevisione(idCauzione);
+        List<Revisione> ultimaRevisione = revisioneRepository.getUltimaRevisione(idCauzione);
+        return ultimaRevisione.size() > 0 ? Optional.of(ultimaRevisione.get(0)) :  Optional.empty();
     }
 
     public PageResponse<GetAllRevisioniResponse> getAll(PaginationRequest request) {
@@ -85,12 +87,18 @@ public class RevisioneService {
 
     @Transactional(readOnly = true)
     public DettaglioRevisioneResponse getDettaglioById(Long id) {
-        return revisioneRepository.getDettaglioById(id);
+        DettaglioRevisioneResponse dettaglioById = revisioneRepository.getDettaglioById(id);
+        Optional<Revisione> ultimaRevisione =
+                cauzioneService.getUltimaRevisione(dettaglioById.getDatiCauzione().getIdCauzione());
+        SezioneDatiCauzioneResponse datiCauzione = dettaglioById.getDatiCauzione();
+        datiCauzione.setDataUltimaRevisione(ultimaRevisione.map(Revisione::getDataRevisione).orElse(null));
+        dettaglioById.setDatiCauzione(datiCauzione);
+        return dettaglioById;
     }
 
     public void creaNuovaRevisione(NuovaRevisioneRequest request, String username) {
         //Allora in teoria devo: creare un nuovo oggetto revisione
-        Revisione revisione = new Revisione(request.getDataRevisione(),request.getConformitaTotale(),
+        Revisione revisione = new Revisione(request.getDataRevisione(),request.getMancaAggiornamento(),request.getConformitaTotale(),
                 request.getTargaPresente(),request.getConformitaDisegnoTecnico(),request.getInterventoMembrature(),
                 request.getDescrizioneInterventoMembrature(),request.getInterventoSaldatura(),request.getCernieraBullonata(),
                 request.getCattivoUsoInforcatura(),request.getCattivoUsoCollisione(),request.getAltroIntervento(),request.getStabilitaGlobale(),

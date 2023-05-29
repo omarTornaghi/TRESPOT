@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -19,6 +20,7 @@ public class CauzioneWithBobineAssociateResponse {
     private String descrizioneMagazzino;
     private Long idTipologiaCauzione;
     private String descrizioneTipologiaCauzione;
+    private LocalDateTime dataUltimaRevisione;
     private Integer maxBobine;
     private List<GetDettaglioBobineAssociateResponse>codiciBobine;
 

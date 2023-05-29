@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class NuovaRevisioneRequest {
     private Long idCauzione;
     private LocalDateTime dataRevisione;
+    private Boolean mancaAggiornamento;
     private Boolean conformitaTotale;
     private String targaPresente;
     private String conformitaDisegnoTecnico;

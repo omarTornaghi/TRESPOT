@@ -169,7 +169,8 @@ public class CauzioneService {
         Optional<Cauzione> cauzioneOptional = getSezioneDatiCauzioneByText(text);
         if(cauzioneOptional.isEmpty()) return new SezioneDatiCauzioneResponse("NON_TROVATO_DA_RICERCA");
         Cauzione cauzione = cauzioneOptional.get();
-        return new SezioneDatiCauzioneResponse(cauzione.getId(), cauzione.getEpcTag(),cauzione.getMatricola(),cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getDescrizione(),cauzione.getTipologiaCauzione().getDescrizione());
+        Optional<Revisione> ultimaRevisione = storicoCauzioneService.getUltimaRevisione(cauzione.getId());
+        return new SezioneDatiCauzioneResponse(cauzione.getId(), cauzione.getEpcTag(),cauzione.getMatricola(),cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getDescrizione(),cauzione.getTipologiaCauzione().getDescrizione(), ultimaRevisione.map(Revisione::getDataRevisione).orElse(null));
     }
     public void aggiungiNuovaRevisione(Long idCauzione, Revisione revisione, String username) {
         //Creare un nuovo oggetto storico e salvare
@@ -368,8 +369,11 @@ public class CauzioneService {
         if(sezioneDatiCauzioneByText.isEmpty())return new CauzioneWithBobineAssociateResponse("NON_TROVATO_DA_RICERCA");
         Cauzione cauzione = sezioneDatiCauzioneByText.get();
         List<Bobina> bobineAssociate = bobinaService.getBobineAssociate(cauzione.getId());
+        Optional<Revisione> ultimaRevisione = storicoCauzioneService.getUltimaRevisione(cauzione.getId());
         return new CauzioneWithBobineAssociateResponse(cauzione.getId(), cauzione.getEpcTag(),cauzione.getMatricola(),cauzione.getStatoCauzione().getId(),
-                cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getId(),cauzione.getMagazzino().getDescrizione(),cauzione.getTipologiaCauzione().getId(),cauzione.getTipologiaCauzione().getDescrizione(),cauzione.getTipologiaCauzione().getNumeroCauzioniMassimo(),
+                cauzione.getStatoCauzione().getCodice(),cauzione.getMagazzino().getId(),cauzione.getMagazzino().getDescrizione(),cauzione.getTipologiaCauzione().getId(),cauzione.getTipologiaCauzione().getDescrizione(),
+                ultimaRevisione.map(Revisione::getDataRevisione).orElse(null),
+                cauzione.getTipologiaCauzione().getNumeroCauzioniMassimo(),
                 bobineAssociate.stream().map(x -> new GetDettaglioBobineAssociateResponse(x.getId(),x.getCliente().getId(),x.getCodice(),x.getCliente().getCodice())).collect(Collectors.toList()));
     }
 
@@ -575,5 +579,10 @@ public class CauzioneService {
         cauzione.setTipologiaCauzione(tipologiaCauzione);
         storicoCauzioneService.aggiungiStorico(cauzione,cauzione.getStatoCauzione(),magazzino,null,TipoOperazione.AGGIORNAMENTO_MANUALE,null);
         return new ValidateResponse(request.getEpcTagId(),cauzione.getMatricola(),false,"OK");
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Revisione> getUltimaRevisione(Long idCauzione) {
+        return storicoCauzioneService.getUltimaRevisione(idCauzione);
     }
 }

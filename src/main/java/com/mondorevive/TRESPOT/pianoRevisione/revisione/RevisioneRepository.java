@@ -4,6 +4,7 @@ import com.mondorevive.TRESPOT.responses.DettaglioRevisioneResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RevisioneRepository extends JpaRepository<Revisione, Long> {
@@ -11,12 +12,13 @@ public interface RevisioneRepository extends JpaRepository<Revisione, Long> {
             "from Revisione r inner join r.storicoCauzione sc " +
             "where sc.timestampOperazione = (" +
             "select max(sc1.timestampOperazione) from Revisione r1 inner join r1.storicoCauzione sc1 where sc1.cauzione.id = :idCauzione) " +
-            "and sc.cauzione.id = :idCauzione")
-    Optional<Revisione> getUltimaRevisione(Long idCauzione);
+            "and sc.cauzione.id = :idCauzione " +
+            "order by r.id desc")
+    List<Revisione> getUltimaRevisione(Long idCauzione);
     
     @Query("select new com.mondorevive.TRESPOT.responses.DettaglioRevisioneResponse(" +
             "c.id,c.epcTag,c.matricola,stato.codice,m.descrizione,tc.descrizione," +
-            "r.id,r.dataRevisione,r.conformitaTotale," +
+            "r.id,r.dataRevisione,r.mancaAggiornamento,r.conformitaTotale," +
             "r.targaPresente," +
             "r.conformitaDisegnoTecnico," +
             "r.interventoMembrature," +
