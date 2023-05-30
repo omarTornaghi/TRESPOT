@@ -27,4 +27,8 @@ public class BobinaStoricoCauzioneService {
     public void deleteByIdCauzione(Long id) {
         bobinaStoricoCauzioneRepository.deleteByIdCauzione(id);
     }
+
+    public void deleteByIdStorico(Long id) {
+        bobinaStoricoCauzioneRepository.deleteByIdStorico(id);
+    }
 }

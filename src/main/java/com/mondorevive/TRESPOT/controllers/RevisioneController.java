@@ -3,6 +3,7 @@ package com.mondorevive.TRESPOT.controllers;
 import com.mondorevive.TRESPOT.pianoRevisione.revisione.RevisioneService;
 import com.mondorevive.TRESPOT.requests.NuovaRevisioneRequest;
 import com.mondorevive.TRESPOT.requests.PaginationRequest;
+import com.mondorevive.TRESPOT.requests.UpdateRevisioneRequest;
 import com.mondorevive.TRESPOT.utils.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,20 @@ public class RevisioneController {
     public ResponseEntity<Object> creaNuovaRevisione(@RequestHeader("Authorization") String token, @Valid @RequestBody NuovaRevisioneRequest request){
         log.info(CONTROLLER_TAG + "POST nuovaRevisione");
         revisioneService.creaNuovaRevisione(request, jwtUtils.getUsername(token));
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/updateRevisione")
+    public ResponseEntity<Object>updateRevisione(@Valid @RequestBody UpdateRevisioneRequest request){
+        log.info(CONTROLLER_TAG + "POST updateRevisione");
+        revisioneService.updateRevisione(request);
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("deleteRevisioneById")
+    public ResponseEntity<Object> deleteRevisioneById(@RequestParam Long id){
+        log.info(CONTROLLER_TAG + "POST deleteRevisioneById");
+        revisioneService.deleteRevisioneById(id);
         return ResponseEntity.ok(null);
     }
 }

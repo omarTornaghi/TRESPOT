@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,4 +46,32 @@ public interface RevisioneRepository extends JpaRepository<Revisione, Long> {
     @Modifying @Query("delete from Revisione r where r.storicoCauzione.id in " +
             "(select sc.id from StoricoCauzione sc where sc.cauzione.id = :id)")
     void deleteByIdCauzione(Long id);
+
+    @Query("select r from Revisione r inner join r.storicoCauzione sc where r.id = :id")
+    Optional<Revisione> findRevisioneById(Long id);
+
+    @Modifying
+    @Query("update Revisione r set " +
+            "r.dataRevisione = :dataRevisione," +
+            "r.mancaAggiornamento = :mancaAggiornamento," +
+            "r.conformitaTotale = :conformitaTotale," +
+            "r.targaPresente = :targaPresente," +
+            "r.conformitaDisegnoTecnico = :conformitaDisegnoTecnico," +
+            "r.interventoMembrature = :interventoMembrature," +
+            "r.descrizioneInterventoMembrature = :descrizioneInterventoMembrature," +
+            "r.interventoSaldatura = :interventoSaldatura," +
+            "r.cernieraBullonata = :cernieraBullonata," +
+            "r.cattivoUsoInforcatura = :cattivoUsoInforcatura," +
+            "r.cattivoUsoCollisione = :cattivoUsoCollisione," +
+            "r.altroIntervento = :altroIntervento," +
+            "r.stabilitaGlobale = :stabilitaGlobale," +
+            "r.funzionamentoRfid = :funzionamentoRfid," +
+            "r.ulterioriNote = :ulterioriNote " +
+            "where r.id = :id")
+    void updateRevisione(Long id, LocalDateTime dataRevisione, Boolean mancaAggiornamento,
+                         Boolean conformitaTotale, String targaPresente, String conformitaDisegnoTecnico,
+                         String interventoMembrature, String descrizioneInterventoMembrature,
+                         String interventoSaldatura, String cernieraBullonata,
+                         String cattivoUsoInforcatura, String cattivoUsoCollisione, String altroIntervento,
+                         String stabilitaGlobale, String funzionamentoRfid, String ulterioriNote);
 }

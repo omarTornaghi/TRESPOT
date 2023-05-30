@@ -16,4 +16,7 @@ public interface BobinaStoricoCauzioneRepository extends JpaRepository<BobinaSto
     @Modifying @Query("delete from BobinaStoricoCauzione bsc where bsc.storicoCauzione.id in " +
             "(select sc.id from StoricoCauzione sc where sc.cauzione.id = :id)")
     void deleteByIdCauzione(Long id);
+
+    @Modifying @Query("delete from BobinaStoricoCauzione bsc where bsc.storicoCauzione.id = :id")
+    void deleteByIdStorico(Long id);
 }

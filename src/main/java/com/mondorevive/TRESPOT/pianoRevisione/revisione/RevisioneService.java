@@ -2,17 +2,18 @@ package com.mondorevive.TRESPOT.pianoRevisione.revisione;
 
 import com.mondorevive.TRESPOT.cauzione.CauzioneService;
 import com.mondorevive.TRESPOT.cauzione.PageResponse;
+import com.mondorevive.TRESPOT.cauzione.storicoCauzione.StoricoCauzione;
+import com.mondorevive.TRESPOT.cauzione.storicoCauzione.StoricoCauzioneService;
 import com.mondorevive.TRESPOT.pagination.PaginationService;
-import com.mondorevive.TRESPOT.requests.FiltroRequest;
-import com.mondorevive.TRESPOT.requests.NuovaRevisioneRequest;
-import com.mondorevive.TRESPOT.requests.OrdinamentoRequest;
-import com.mondorevive.TRESPOT.requests.PaginationRequest;
+import com.mondorevive.TRESPOT.requests.*;
 import com.mondorevive.TRESPOT.responses.DettaglioRevisioneResponse;
 import com.mondorevive.TRESPOT.responses.GetAllRevisioniResponse;
 import com.mondorevive.TRESPOT.responses.SezioneDatiCauzioneResponse;
+import com.mondorevive.TRESPOT.utente.Utente;
+import com.mondorevive.TRESPOT.utente.UtenteService;
 import com.mondorevive.TRESPOT.utils.DateUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -31,18 +32,28 @@ public class RevisioneService {
     private final PaginationRevisioneRepository paginationRevisioneRepository;
     private final PaginationService paginationService;
     private final CauzioneService cauzioneService;
+    private final StoricoCauzioneService storicoCauzioneService;
+    private final UtenteService utenteService;
 
     public RevisioneService(RevisioneRepository revisioneRepository,
                             PaginationRevisioneRepository paginationRevisioneRepository,
-                            PaginationService paginationService, @Lazy @NotNull CauzioneService cauzioneService) {
+                            PaginationService paginationService, @Lazy @NotNull CauzioneService cauzioneService,
+                            @Lazy @NotNull StoricoCauzioneService storicoCauzioneService, UtenteService utenteService) {
         this.revisioneRepository = revisioneRepository;
         this.paginationRevisioneRepository = paginationRevisioneRepository;
         this.paginationService = paginationService;
         this.cauzioneService = cauzioneService;
+        this.storicoCauzioneService = storicoCauzioneService;
+        this.utenteService = utenteService;
     }
 
     private void salva(Revisione revisione) {
         revisioneRepository.save(revisione);
+    }
+
+    @Transactional(readOnly = true)
+    public Revisione getById(Long id){
+        return revisioneRepository.findRevisioneById(id).orElseThrow(() -> new EntityNotFoundException("Revisione con id " + id + " non trovata"));
     }
 
     @Transactional(readOnly = true)
@@ -98,7 +109,7 @@ public class RevisioneService {
 
     public void creaNuovaRevisione(NuovaRevisioneRequest request, String username) {
         //Allora in teoria devo: creare un nuovo oggetto revisione
-        Revisione revisione = new Revisione(request.getDataRevisione(),request.getMancaAggiornamento(),request.getConformitaTotale(),
+        Revisione revisione = new Revisione(request.getDataRevisione() != null ? request.getDataRevisione() : DateUtils.getTimestampCorrente(),request.getMancaAggiornamento(),request.getConformitaTotale(),
                 request.getTargaPresente(),request.getConformitaDisegnoTecnico(),request.getInterventoMembrature(),
                 request.getDescrizioneInterventoMembrature(),request.getInterventoSaldatura(),request.getCernieraBullonata(),
                 request.getCattivoUsoInforcatura(),request.getCattivoUsoCollisione(),request.getAltroIntervento(),request.getStabilitaGlobale(),
@@ -113,5 +124,23 @@ public class RevisioneService {
 
     public void deleteByIdCauzione(Long id) {
         revisioneRepository.deleteByIdCauzione(id);
+    }
+
+    public void deleteRevisioneById(Long id) {
+        Revisione byId = getById(id);
+        StoricoCauzione storicoCauzione = byId.getStoricoCauzione();
+        revisioneRepository.deleteById(id);
+        storicoCauzioneService.deleteById(storicoCauzione.getId());
+    }
+
+    public void updateRevisione(UpdateRevisioneRequest request) {
+        revisioneRepository.updateRevisione(request.getId(),request.getDataRevisione(),
+                request.getMancaAggiornamento(),request.getConformitaTotale(),
+                request.getTargaPresente(),request.getConformitaDisegnoTecnico(),
+                request.getInterventoMembrature(),request.getDescrizioneInterventoMembrature(),
+                request.getInterventoSaldatura(),request.getCernieraBullonata(),
+                request.getCattivoUsoInforcatura(),request.getCattivoUsoCollisione(),
+                request.getAltroIntervento(),request.getStabilitaGlobale(),
+                request.getFunzionamentoRfid(),request.getUlterioriNote());
     }
 }
