@@ -23,4 +23,8 @@ public class BobinaStoricoCauzioneService {
     public void salvaBobinaStorico(Bobina bobina, StoricoCauzione storicoCauzione){
         salva(new BobinaStoricoCauzione(bobina,storicoCauzione));
     }
+
+    public void deleteByIdCauzione(Long id) {
+        bobinaStoricoCauzioneRepository.deleteByIdCauzione(id);
+    }
 }

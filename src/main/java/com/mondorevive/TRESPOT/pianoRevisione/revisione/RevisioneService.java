@@ -110,4 +110,8 @@ public class RevisioneService {
     public void importaRevisione(Revisione revisione) {
         salva(revisione);
     }
+
+    public void deleteByIdCauzione(Long id) {
+        revisioneRepository.deleteByIdCauzione(id);
+    }
 }

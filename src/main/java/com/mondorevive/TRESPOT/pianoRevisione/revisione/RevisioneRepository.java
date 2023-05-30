@@ -2,6 +2,7 @@ package com.mondorevive.TRESPOT.pianoRevisione.revisione;
 
 import com.mondorevive.TRESPOT.responses.DettaglioRevisioneResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -40,4 +41,8 @@ public interface RevisioneRepository extends JpaRepository<Revisione, Long> {
             "inner join c.magazzino m " +
             "where r.id = :id")
     DettaglioRevisioneResponse getDettaglioById(Long id);
+
+    @Modifying @Query("delete from Revisione r where r.storicoCauzione.id in " +
+            "(select sc.id from StoricoCauzione sc where sc.cauzione.id = :id)")
+    void deleteByIdCauzione(Long id);
 }
