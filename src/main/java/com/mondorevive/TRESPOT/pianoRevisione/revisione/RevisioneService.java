@@ -72,7 +72,7 @@ public class RevisioneService {
                 }
             }
         }
-        if(request.getOrdinamento() == null) request.setOrdinamento(new OrdinamentoRequest("storicoCauzione.timestampOperazione", "DESC"));
+        if(request.getOrdinamento() == null || request.getOrdinamento().getColonna() == null) request.setOrdinamento(new OrdinamentoRequest("dataRevisione", "DESC"));
         PageResponse<Revisione> page = paginationService.getPage(specification, request, paginationRevisioneRepository);
         return new PageResponse<>(page, buildContent(page.getContent()));
     }
