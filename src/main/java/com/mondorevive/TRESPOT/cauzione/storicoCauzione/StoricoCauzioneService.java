@@ -78,4 +78,8 @@ public class StoricoCauzioneService {
         bobinaStoricoCauzioneService.deleteByIdStorico(id);
         storicoCauzioneRepository.deleteById(id);
     }
+
+    public void updateStatoStoricoByRevisioneId(Long idRevisione, Long idStato) {
+        storicoCauzioneRepository.updateStatoStoricoByRevisioneId(idRevisione,idStato);
+    }
 }

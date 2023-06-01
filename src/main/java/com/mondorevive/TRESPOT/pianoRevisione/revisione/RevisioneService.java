@@ -142,5 +142,6 @@ public class RevisioneService {
                 request.getCattivoUsoInforcatura(),request.getCattivoUsoCollisione(),
                 request.getAltroIntervento(),request.getStabilitaGlobale(),
                 request.getFunzionamentoRfid(),request.getUlterioriNote());
+        cauzioneService.aggiornaRevisione(request.getDatiCauzione().getIdCauzione(),request.getId(),request.getConformitaTotale());
     }
 }

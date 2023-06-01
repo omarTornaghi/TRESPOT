@@ -30,4 +30,7 @@ public interface StoricoCauzioneRepository extends JpaRepository<StoricoCauzione
 
     @Modifying @Query("delete from StoricoCauzione sc where sc.cauzione.id = :id")
     void deleteByIdCauzione(Long id);
+
+    @Modifying @Query("update StoricoCauzione sc set sc.statoCauzione.id = :idStato where sc.id in (select r.storicoCauzione.id from Revisione r where r.id = :idRevisione)")
+    void updateStatoStoricoByRevisioneId(Long idRevisione, Long idStato);
 }

@@ -3,15 +3,25 @@ package com.mondorevive.TRESPOT.controllers;
 import com.mondorevive.TRESPOT.cauzione.CauzioneService;
 import com.mondorevive.TRESPOT.requests.*;
 import com.mondorevive.TRESPOT.requests.silvanoCattaneo.*;
+import com.mondorevive.TRESPOT.responses.silvanoCattaneo.ValidateResponse;
 import com.mondorevive.TRESPOT.utils.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -23,6 +33,8 @@ public class CauzioneController {
     private final String CONTROLLER_TAG = "CAUZIONE_CONTROLLER - ";
     private final CauzioneService cauzioneService;
     private final JwtUtils jwtUtils;
+    @Autowired
+    SimpMessagingTemplate template;
 
     @GetMapping("/statiCauzioneSelect")
     public ResponseEntity<Object>getAllStatiCauzioniSelect(){
@@ -71,6 +83,13 @@ public class CauzioneController {
         log.info(CONTROLLER_TAG + "GET getTagInfo");
         log.info("epcTag = " + epcTag);
         return ResponseEntity.ok(cauzioneService.getTagInfo(epcTag));
+    }
+
+
+    @GetMapping("/aggiornamentoVarco")
+    public ResponseEntity<Object>getAggiornamentoVarco() throws ExecutionException, InterruptedException {
+        log.info(CONTROLLER_TAG + "EP GET aggiornamentoVarco");
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping("/cauzioni")
@@ -139,9 +158,22 @@ public class CauzioneController {
 
     //EP Silvano
     @PostMapping("/validateEpcTag")
-    public ResponseEntity<Object> validateEpcTag(@RequestBody ValidateEpcTagRequest response){
+    public ResponseEntity<Object> validateEpcTag(@RequestBody ValidateEpcTagRequest request){
         log.info(CONTROLLER_TAG + "POST validateEpcTag");
-        return ResponseEntity.ok(cauzioneService.validateEpcTag(response));
+        List<ValidateResponse> validateResponses = cauzioneService.validateEpcTag(request);
+        template.convertAndSend("/topic/message" + request.getGateId(), validateResponses);
+        return ResponseEntity.ok(validateResponses);
+    }
+
+    @MessageMapping("/sendMessage")
+    public void receiveMessage() {
+        // receive message from client
+
+    }
+
+    @SendTo("/topic/message")
+    public List<ValidateResponse> broadcastMessage(@Payload List<ValidateResponse> response) {
+        return response;
     }
 
     @PostMapping("/tagInitialize")

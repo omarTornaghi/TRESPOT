@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class UpdateRevisioneRequest {
+    private UpdateRevisioneDatiCauzione datiCauzione;
     private Long id;
     private LocalDateTime dataRevisione;
     private Boolean mancaAggiornamento;

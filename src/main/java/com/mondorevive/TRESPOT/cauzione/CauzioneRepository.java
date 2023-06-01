@@ -72,4 +72,7 @@ public interface CauzioneRepository extends JpaRepository<Cauzione, Long> {
     @Query("select c,sc,m from Cauzione c inner join c.statoCauzione sc inner join c.magazzino m " +
             "where c.epcTag in :epcTagList")
     List<Cauzione> getCauzioniListWithStatoAndMagazzinoByEpcTagList(List<String> epcTagList);
+
+    @Modifying @Query("update Cauzione c set c.statoCauzione.id = :id where c.id = :idCauzione")
+    void updateCauzione(Long idCauzione, Long id);
 }

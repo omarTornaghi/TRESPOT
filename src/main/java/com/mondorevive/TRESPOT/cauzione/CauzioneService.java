@@ -185,6 +185,12 @@ public class CauzioneService {
         storicoCauzioneService.aggiungiStorico(cauzione,nuovoStato,magazzino,utente,TipoOperazione.REVISIONE,revisione);
     }
 
+    public void aggiornaRevisione(Long idCauzione, Long id, Boolean conformitaTotale) {
+        TipoStatoCauzione tipoStatoCauzione = conformitaTotale ? TipoStatoCauzione.LIBERO : TipoStatoCauzione.IN_RIPARAZIONE;
+        StatoCauzione nuovoStato = statoCauzioneService.getByTipo(tipoStatoCauzione);
+        cauzioneRepository.updateCauzione(idCauzione,nuovoStato.getId());
+        storicoCauzioneService.updateStatoStoricoByRevisioneId(id,nuovoStato.getId());
+    }
 
     public GetInfoCauzioneResponse getInfoCauzione(String text, String operazione, String username, Long idMagazzino) {
         //Come altra chiamata ma ci chiamo errore
