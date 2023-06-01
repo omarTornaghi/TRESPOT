@@ -46,7 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -160,6 +162,16 @@ public class Initializer implements ApplicationRunner {
         private String flagOk;
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class StoricoJson{
+        private String codiceVecchio;
+        private String tipo;
+        private String timestampOperazione;
+    }
+
     @Transactional
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -169,6 +181,9 @@ public class Initializer implements ApplicationRunner {
             Arrays.stream(TipoStatoCauzione.values()).forEach(statoCauzioneService::crea);
             Arrays.stream(TipoOperazione.values()).forEach(operazioneService::crea);
             importaDatiIniziali();
+        }
+        if(devoCaricare(args, "importaStorico")){
+            importaStorico();
         }
     }
 
@@ -300,6 +315,38 @@ public class Initializer implements ApplicationRunner {
             StoricoCauzione storicoCauzione = new StoricoCauzione(dataRevisione,cauzione,statoCauzioneInManutenzione,bustoArsizio,utente,operazioneRevisione,revisione);
             storicoCauzioneService.importaOperazione(storicoCauzione);
             revisioneService.importaRevisione(revisione);
+        }
+    }
+
+    private void importaStorico() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        TrespoloJson[] trespoloJsons = mapper.readValue(TrespoloJson.class.getClassLoader().getResource("static/importazione" +
+                "/trespoli.json"), TrespoloJson[].class);
+        //Ottengo i trespoli corrispondenti a questi json
+        List<Cauzione> cauzioneList = cauzioneService.getTrespoliImportati(Arrays.stream(trespoloJsons).map(x -> x.getEpcTag()).collect(Collectors.toList()));
+        //Carico lo storico
+        StoricoJson[] storicoJsons = mapper.readValue(StoricoJson.class.getClassLoader().getResource("static/importazione" +
+                "/storico.json"), StoricoJson[].class);
+        StatoCauzione statoCauzioneLibero = statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO);
+        Magazzino fuori = magazzinoService.getByDescrizione("FUORI");
+        Magazzino bustoArsizio = magazzinoService.getByDescrizione("BA - BUSTO ARSIZIO");
+        Operazione caricoVarco = operazioneService.getByTipo(TipoOperazione.CARICO_VARCO);
+        Operazione scaricoVarco = operazioneService.getByTipo(TipoOperazione.SCARICO_VARCO);
+        for(StoricoJson storicoJson : storicoJsons){
+            Optional<TrespoloJson> first =
+                    Arrays.stream(trespoloJsons).filter(x -> x.getCodiceVecchio().equals(storicoJson.getCodiceVecchio())).findFirst();
+            if(first.isEmpty())continue;
+            TrespoloJson trespoloJson = first.get();
+            Optional<Cauzione> first1 =
+                    cauzioneList.stream().filter(x -> x.getEpcTag().equals(trespoloJson.getEpcTag())).findFirst();
+            if(first1.isEmpty()) continue;
+            Cauzione cauzione = first1.get();
+            LocalDateTime timestampOperazione = !storicoJson.getTimestampOperazione().equals("NULL") ? LocalDateTime.parse(storicoJson.getTimestampOperazione(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) : null;
+            if(timestampOperazione == null) continue;
+            System.out.println("Data: " + timestampOperazione.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss")));
+            StoricoCauzione storicoCauzione = new StoricoCauzione(timestampOperazione,cauzione,statoCauzioneLibero,storicoJson.getTipo().equals("U") ? fuori : bustoArsizio,null,storicoJson.getTipo().equals("U") ? caricoVarco : scaricoVarco,null);
+            System.out.println("Ho creato uno storico!!");
+            storicoCauzioneService.importaOperazione(storicoCauzione);
         }
     }
 

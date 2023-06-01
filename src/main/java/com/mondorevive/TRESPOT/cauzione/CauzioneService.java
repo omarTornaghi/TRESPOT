@@ -13,6 +13,7 @@ import com.mondorevive.TRESPOT.cliente.Cliente;
 import com.mondorevive.TRESPOT.cliente.ClienteService;
 import com.mondorevive.TRESPOT.exceptions.SistemaEsternoNotSupportedException;
 import com.mondorevive.TRESPOT.exceptions.exceptions.InvalidRequestException;
+import com.mondorevive.TRESPOT.initializer.Initializer;
 import com.mondorevive.TRESPOT.magazzino.Magazzino;
 import com.mondorevive.TRESPOT.magazzino.MagazzinoService;
 import com.mondorevive.TRESPOT.pagination.PaginationService;
@@ -590,5 +591,10 @@ public class CauzioneService {
     @Transactional(readOnly = true)
     public Optional<Revisione> getUltimaRevisione(Long idCauzione) {
         return storicoCauzioneService.getUltimaRevisione(idCauzione);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Cauzione> getTrespoliImportati(List<String> epcTagList) {
+        return cauzioneRepository.getAllByEpcTagList(epcTagList);
     }
 }

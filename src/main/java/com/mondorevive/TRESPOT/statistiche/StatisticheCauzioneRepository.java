@@ -49,7 +49,7 @@ public interface StatisticheCauzioneRepository extends JpaRepository<Cauzione, L
             "from StoricoCauzione sc inner join sc.magazzino m " +
             "where sc.timestampOperazione >= :dataInizio and " +
             "sc.timestampOperazione <= :dataFine and " +
-            "(sc.operazione.id = :idCaricoVarco OR sc.operazione.id = :idCaricoManuale OR m.stabilimento.id in :idStabilimentiList)" +
+            "(sc.operazione.id = :idCaricoVarco OR sc.operazione.id = :idCaricoManuale OR m.stabilimento.id in :idStabilimentiList) " +
             "group by function('TO_CHAR',sc.timestampOperazione,'yyyy, mm') " +
             "order by function('TO_CHAR',sc.timestampOperazione,'yyyy, mm')")
     List<ChartDataResponse>getOperazioniChartData(LocalDateTime dataInizio, LocalDateTime dataFine, Long idCaricoVarco, Long idCaricoManuale,Long idScaricoVarco,Long idScaricoManuale,List<Long>idStabilimentiList);
