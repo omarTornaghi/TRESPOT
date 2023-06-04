@@ -30,4 +30,10 @@ public class StatisticheController {
         log.info(CONTROLLER_TAG + "GET tipologiaCauzioneCliente");
         return ResponseEntity.ok(statisticheService.getStatisticaTipologiaCauzioneCliente(idTipologiaCauzione,jwtUtils.getUsername(token)));
     }
+
+    @GetMapping("/cauzioniAttive")
+    public ResponseEntity<Object>getStatisticaCauzioniAttive(){
+        log.info(CONTROLLER_TAG + "GET cauzioniAttive");
+        return ResponseEntity.ok(statisticheService.getStatisticaCauzioniAttive());
+    }
 }

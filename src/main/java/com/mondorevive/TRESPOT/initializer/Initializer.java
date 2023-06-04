@@ -343,9 +343,7 @@ public class Initializer implements ApplicationRunner {
             Cauzione cauzione = first1.get();
             LocalDateTime timestampOperazione = !storicoJson.getTimestampOperazione().equals("NULL") ? LocalDateTime.parse(storicoJson.getTimestampOperazione(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")) : null;
             if(timestampOperazione == null) continue;
-            System.out.println("Data: " + timestampOperazione.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss")));
             StoricoCauzione storicoCauzione = new StoricoCauzione(timestampOperazione,cauzione,statoCauzioneLibero,storicoJson.getTipo().equals("U") ? fuori : bustoArsizio,null,storicoJson.getTipo().equals("U") ? caricoVarco : scaricoVarco,null);
-            System.out.println("Ho creato uno storico!!");
             storicoCauzioneService.importaOperazione(storicoCauzione);
         }
     }

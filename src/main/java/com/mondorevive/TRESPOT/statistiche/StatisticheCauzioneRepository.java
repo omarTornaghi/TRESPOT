@@ -1,10 +1,8 @@
 package com.mondorevive.TRESPOT.statistiche;
 
 import com.mondorevive.TRESPOT.cauzione.Cauzione;
-import com.mondorevive.TRESPOT.responses.ChartDataResponse;
-import com.mondorevive.TRESPOT.responses.ChartDataTipologieCauzione;
-import com.mondorevive.TRESPOT.responses.StatisticaTipologiaCauzioneCliente;
-import com.mondorevive.TRESPOT.responses.StatisticaTipologiaCauzioneMagazzinoInterno;
+import com.mondorevive.TRESPOT.cauzione.storicoCauzione.StoricoCauzione;
+import com.mondorevive.TRESPOT.responses.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -110,4 +108,14 @@ public interface StatisticheCauzioneRepository extends JpaRepository<Cauzione, L
                                                                                            Long idOccupato,
                                                                                            Long idInManutenzione,
                                                                                            Long idInRiparazione);
+    @Query("select new com.mondorevive.TRESPOT.responses.StatisticaAcquistiCauzioniDataResponse(function('TO_CHAR',c.timestampAcquisto,'yyyy'),count(c)) " +
+            "from Cauzione c " +
+            "group by function('TO_CHAR',c.timestampAcquisto,'yyyy') " +
+            "order by function('TO_CHAR',c.timestampAcquisto,'yyyy')")
+    List<StatisticaAcquistiCauzioniDataResponse> getAcquistiCauzioniData();
+
+    @Query("select sc,c from StoricoCauzione sc inner join sc.cauzione c " +
+            "where sc.timestampOperazione = " +
+            "(select max(sc1.timestampOperazione) from StoricoCauzione sc1 where sc1.cauzione.id = c.id)")
+    List<StoricoCauzione>getUltimiStorici();
 }
