@@ -1,10 +1,12 @@
 package com.mondorevive.TRESPOT.statistiche;
 
 import com.mondorevive.TRESPOT.cauzione.Cauzione;
-import com.mondorevive.TRESPOT.cauzione.storicoCauzione.StoricoCauzione;
+import com.mondorevive.TRESPOT.pojo.DatiRevisioni;
+import com.mondorevive.TRESPOT.pojo.UltimoStorico;
 import com.mondorevive.TRESPOT.responses.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -114,8 +116,27 @@ public interface StatisticheCauzioneRepository extends JpaRepository<Cauzione, L
             "order by function('TO_CHAR',c.timestampAcquisto,'yyyy')")
     List<StatisticaAcquistiCauzioniDataResponse> getAcquistiCauzioniData();
 
-    @Query("select sc,c from StoricoCauzione sc inner join sc.cauzione c " +
-            "where sc.timestampOperazione = " +
-            "(select max(sc1.timestampOperazione) from StoricoCauzione sc1 where sc1.cauzione.id = c.id)")
-    List<StoricoCauzione>getUltimiStorici();
+    @Query(name = "get_ultima_operazione", nativeQuery = true)
+    List<UltimoStorico>getUltimiStorici();
+
+    @Query(name = "get_dettaglio_stato_cauzioni", nativeQuery = true)
+    List<DettaglioCauzioniAttive> getDettaglioCauzioniAttive(@Param("da") Long da,
+                                                             @Param("a") Long a);
+
+    @Query("select new com.mondorevive.TRESPOT.pojo.DatiRevisioni(" +
+            "SUM(CASE WHEN r.conformitaTotale = true THEN 1 ELSE 0 END)," +
+            "SUM(CASE WHEN r.conformitaTotale = false THEN 1 ELSE 0 END)," +
+            "SUM(1))" +
+            "from Revisione r " +
+            "where r.dataRevisione >= :dataInizio and r.dataRevisione <= :dataFine ")
+    DatiRevisioni getDatiRevisioni(LocalDateTime dataInizio, LocalDateTime dataFine);
+
+    @Query("select new com.mondorevive.TRESPOT.responses.AndamentoRevisioneResponse(function('TO_CHAR',r.dataRevisione,'yyyy, mm')," +
+            "SUM(CASE WHEN r.conformitaTotale = true THEN 1 ELSE 0 END)," +
+            "SUM(CASE WHEN r.conformitaTotale = false THEN 1 ELSE 0 END)) " +
+            "from Revisione r " +
+            "where r.dataRevisione >= :dataInizio and r.dataRevisione <= :dataFine " +
+            "group by function('TO_CHAR',r.dataRevisione,'yyyy, mm') " +
+            "order by function('TO_CHAR',r.dataRevisione,'yyyy, mm')")
+    List<AndamentoRevisioneResponse> getAndamentiRevisioni(LocalDateTime dataInizio, LocalDateTime dataFine);
 }

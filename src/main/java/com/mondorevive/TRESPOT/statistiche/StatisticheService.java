@@ -5,6 +5,10 @@ import com.mondorevive.TRESPOT.cauzione.statoCauzione.TipoStatoCauzione;
 import com.mondorevive.TRESPOT.cauzione.storicoCauzione.StoricoCauzione;
 import com.mondorevive.TRESPOT.cauzione.storicoCauzione.operazione.OperazioneService;
 import com.mondorevive.TRESPOT.cauzione.storicoCauzione.operazione.TipoOperazione;
+import com.mondorevive.TRESPOT.pojo.DataInizioDataFine;
+import com.mondorevive.TRESPOT.pojo.DatiRevisioni;
+import com.mondorevive.TRESPOT.pojo.UltimoStorico;
+import com.mondorevive.TRESPOT.requests.GruppiUltimaOperazioneRequest;
 import com.mondorevive.TRESPOT.responses.*;
 import com.mondorevive.TRESPOT.stabilimento.Stabilimento;
 import com.mondorevive.TRESPOT.utente.UtenteService;
@@ -15,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,17 +81,51 @@ public class StatisticheService {
     }
 
     @Transactional(readOnly = true)
-    public StatisticaCauzioniAttiveResponse getStatisticaCauzioniAttive() {
+    public StatisticaCauzioniAttiveResponse getStatisticaCauzioniAttive(List<GruppiUltimaOperazioneRequest>requestList) {
         StatisticaCauzioniAttiveResponse response = new StatisticaCauzioniAttiveResponse();
         response.setAcquistiCauzioniDataList(statisticheCauzioneRepository.getAcquistiCauzioniData());
-        System.out.println("TEST1");
-        List<StoricoCauzione> ultimiStorici = statisticheCauzioneRepository.getUltimiStorici();
-        System.out.println("TEST2");
-        Map<Long,Boolean> check = new HashMap<>();
-        for(StoricoCauzione s : ultimiStorici){
-            if(check.containsKey(s.getCauzione().getId())) throw new RuntimeException(("Esiste già la cauzione"));
-            check.put(s.getCauzione().getId(),true);
+        Map<String,Long>map = new HashMap<>();
+        List<UltimoStorico> ultimiStorici = statisticheCauzioneRepository.getUltimiStorici();
+        for(UltimoStorico ultimoStorico : ultimiStorici){
+            //In che range è?
+            String key;
+            Optional<GruppiUltimaOperazioneRequest> first =
+                    requestList.stream().filter(x -> x.getDa() <= ultimoStorico.getAnniDiff().intValue() & x.getA() >= ultimoStorico.getAnniDiff().intValue()).findFirst();
+            if(first.isEmpty()) key = "altro";
+            else key = first.get().getDa() + " - " + first.get().getA();
+            Long count = map.get(key);
+            if(count == null)
+                map.put(key, 1L);
+            else map.put(key,count+1);
         }
+        //Trasformo la mappa in response
+        List<StatisticaUltimaOperazioneResponse>out = new LinkedList<>();
+        for (var entry : map.entrySet()) {
+            out.add(new StatisticaUltimaOperazioneResponse(entry.getKey(),entry.getValue()));
+        }
+        out.sort(Comparator.comparing(StatisticaUltimaOperazioneResponse::getLabel));
+        response.setCauzioniConUltimaOperazione(out);
+        return response;
+    }
+
+    @Transactional(readOnly = true)
+    public List<DettaglioCauzioniAttive> getDettaglioCauzioniAttive(Long da, Long a) {
+        return statisticheCauzioneRepository.getDettaglioCauzioniAttive(da,a);
+    }
+
+    @Transactional(readOnly = true)
+    public StatisticaRevisioniResponse getStatisticaRevisioniResponse(String dataInizio, String dataFine){
+        DataInizioDataFine dataInizioDataFine = DateUtils.getDataInizioDataFine(dataInizio, dataFine);
+        StatisticaRevisioniResponse response = new StatisticaRevisioniResponse();
+        response.setCauzioniTotali(statisticheCauzioneRepository.countCauzioni());
+        DatiRevisioni datiRevisioni =
+                statisticheCauzioneRepository.getDatiRevisioni(dataInizioDataFine.getDataInizio(),
+                        dataInizioDataFine.getDataFine());
+        response.setCauzioniRevisionate(datiRevisioni.getTotale());
+        response.setRevisioniOk(datiRevisioni.getOk());
+        response.setRevisioniKo(datiRevisioni.getKo());
+        response.setAndamentiRevisioni(statisticheCauzioneRepository.getAndamentiRevisioni(dataInizioDataFine.getDataInizio(),
+                dataInizioDataFine.getDataFine()));
         return response;
     }
 }

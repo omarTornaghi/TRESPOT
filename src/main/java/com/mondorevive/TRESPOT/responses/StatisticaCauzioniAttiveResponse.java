@@ -9,4 +9,5 @@ import java.util.List;
 @Setter
 public class StatisticaCauzioniAttiveResponse {
     private List<StatisticaAcquistiCauzioniDataResponse> acquistiCauzioniDataList;
+    private List<StatisticaUltimaOperazioneResponse>cauzioniConUltimaOperazione;
 }
