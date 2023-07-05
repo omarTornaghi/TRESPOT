@@ -385,6 +385,7 @@ public class CauzioneService {
     }
 
     public GetInfoBobinaResponse getInfoBobina(String text, String username) {
+        text = text.toUpperCase().replace("-", "/");
         //Prima ricerco nel mio database, se esiste la bobina ritorno le info di quella,altrimenti
         //ricerco da Embyon utilizzando il sistema esterno associato al magazzino dell'utente
         Optional<Bobina> optionalBobina = bobinaService.getBobinaByText(text);
