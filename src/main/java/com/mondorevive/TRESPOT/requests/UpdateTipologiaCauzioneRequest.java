@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class UpdateTipologiaCauzioneRequest {
@@ -17,4 +19,12 @@ public class UpdateTipologiaCauzioneRequest {
     private Integer numeroKgMassimo;
     @NotNull
     private Long idCategoriaCauzione;
+    private String descrizionePortale;
+    private String note;
+    private Integer impG1;
+    private Integer impG2;
+    private Integer impG3;
+    private Integer impMuletto;
+    private Integer impMezzo;
+    private List<TipologiaCauzioneFileRequest> files;
 }

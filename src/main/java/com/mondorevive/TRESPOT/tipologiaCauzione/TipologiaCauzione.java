@@ -31,8 +31,15 @@ public class TipologiaCauzione implements Selectable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_cauzione_id")
     private CategoriaCauzione categoriaCauzione;
-
-    public TipologiaCauzione(String codice, String descrizione, Integer numeroCauzioniMassimo, Integer numeroKgMassimo, CategoriaCauzione categoriaCauzione) {
+    private String descrizionePortale;
+    private String note;
+    private Integer impG1;
+    private Integer impG2;
+    private Integer impG3;
+    private Integer impMuletto;
+    private Integer impMezzo;
+    public TipologiaCauzione(String codice, String descrizione, Integer numeroCauzioniMassimo, Integer numeroKgMassimo,
+                             CategoriaCauzione categoriaCauzione) {
         this.codice = codice;
         this.descrizione = descrizione;
         this.numeroCauzioniMassimo = numeroCauzioniMassimo;
