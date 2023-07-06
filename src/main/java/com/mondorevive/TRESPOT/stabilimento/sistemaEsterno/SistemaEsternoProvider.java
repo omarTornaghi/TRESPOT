@@ -54,11 +54,7 @@ public class SistemaEsternoProvider {
         hds.setJdbcUrl(connectionString);
         hds.setUsername(user);
         hds.setPassword(password);
-        hds.setMinimumIdle(5);
-        hds.setMaximumPoolSize(10);
         hds.setConnectionTimeout(30000);
-        hds.setIdleTimeout(30000);
-        hds.setMaxLifetime(30000);
         hds.setReadOnly(true);
         return hds;
     }

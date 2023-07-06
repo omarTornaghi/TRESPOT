@@ -17,6 +17,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -73,7 +74,7 @@ public class CauzioneController {
     }
 
     @GetMapping("/infoBobina")
-    public ResponseEntity<Object>getInfoBobina(@RequestHeader("Authorization")String token, @RequestParam String text){
+    public ResponseEntity<Object>getInfoBobina(@RequestHeader("Authorization")String token, @RequestParam String text) throws SQLException {
         log.info(CONTROLLER_TAG + "GET infoBobina");
         return ResponseEntity.ok(cauzioneService.getInfoBobina(text, jwtUtils.getUsername(token)));
     }

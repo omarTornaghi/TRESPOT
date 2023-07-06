@@ -43,6 +43,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -384,7 +385,7 @@ public class CauzioneService {
                 bobineAssociate.stream().map(x -> new GetDettaglioBobineAssociateResponse(x.getId(),x.getCliente().getId(),x.getCodice(),x.getCliente().getCodice())).collect(Collectors.toList()));
     }
 
-    public GetInfoBobinaResponse getInfoBobina(String text, String username) {
+    public GetInfoBobinaResponse getInfoBobina(String text, String username) throws SQLException {
         text = text.toUpperCase().replace("-", "/");
         //Prima ricerco nel mio database, se esiste la bobina ritorno le info di quella,altrimenti
         //ricerco da Embyon utilizzando il sistema esterno associato al magazzino dell'utente

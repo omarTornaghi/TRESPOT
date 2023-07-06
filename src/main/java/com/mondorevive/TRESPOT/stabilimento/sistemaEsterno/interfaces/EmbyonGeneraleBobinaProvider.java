@@ -24,7 +24,7 @@ public abstract class EmbyonGeneraleBobinaProvider{
         return stringBuilder.toString();
     }
 
-    protected Optional<DatiBobina> getDatiBobina(HikariDataSource dataSource, String text) {
+    protected Optional<DatiBobina> getDatiBobina(HikariDataSource dataSource, String text) throws SQLException {
         if(text.isBlank()) return Optional.empty();
         text = text.replace("-", "/");
         //TEXT E' tipo 23/CP02557/00006
@@ -34,19 +34,19 @@ public abstract class EmbyonGeneraleBobinaProvider{
         String tipoCommessa = split[1].substring(0,3);
         String numeroCommessa = aggiungiZeri(split[1].substring(3), 10);
         final String codiceOdl = tipoCommessa + "/" + anno + "/" + numeroCommessa;
+        Connection conn = dataSource.getConnection();
         try {
-            if (dataSource != null) {
-                Connection conn = dataSource.getConnection();
-                String query = "SELECT * FROM PERS_OT_VISTAPRGPROD WHERE RIFORDINE LIKE '" + codiceOdl + "%' ORDER BY " +
-                        "RIFORDINE";
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
-                List<DatiBobina> out = mapResultToDatiBobinaList(text, rs);
-                if(out.size() == 0) return Optional.empty();
-                return Optional.of(out.get(0));
-            }
+            String query = "SELECT * FROM PERS_OT_VISTAPRGPROD WHERE RIFORDINE LIKE '" + codiceOdl + "%' ORDER BY " +
+                    "RIFORDINE";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            List<DatiBobina> out = mapResultToDatiBobinaList(text, rs);
+            if(out.size() == 0) return Optional.empty();
+            conn.close();
+            return Optional.of(out.get(0));
         } catch (SQLException ex) {
             ex.printStackTrace();
+            conn.close();
         }
         return Optional.empty();
     }

@@ -3,6 +3,7 @@ package com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.interfaces;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class EmbyonMondoreviveBobinaProvider extends EmbyonGeneraleBobinaProvider implements BobinaProvider{
@@ -12,7 +13,7 @@ public class EmbyonMondoreviveBobinaProvider extends EmbyonGeneraleBobinaProvide
     }
 
     @Override
-    public Optional<DatiBobina> getDatiBobinaByText(String text) {
+    public Optional<DatiBobina> getDatiBobinaByText(String text) throws SQLException {
         return super.getDatiBobina(hikariDataSource,text);
     }
 }
