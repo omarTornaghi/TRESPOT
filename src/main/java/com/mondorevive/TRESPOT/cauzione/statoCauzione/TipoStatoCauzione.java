@@ -1,5 +1,5 @@
 package com.mondorevive.TRESPOT.cauzione.statoCauzione;
 
 public enum TipoStatoCauzione {
-    LIBERO,OCCUPATO,IN_MANUTENZIONE,IN_RIPARAZIONE
+    LIBERO,OCCUPATO,IN_MANUTENZIONE,IN_RIPARAZIONE,NON_ATTIVA
 }

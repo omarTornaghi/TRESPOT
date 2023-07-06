@@ -34,7 +34,6 @@ public abstract class EmbyonGeneraleBobinaProvider{
         String tipoCommessa = split[1].substring(0,3);
         String numeroCommessa = aggiungiZeri(split[1].substring(3), 10);
         final String codiceOdl = tipoCommessa + "/" + anno + "/" + numeroCommessa;
-        System.out.println("codiceOdl = " + codiceOdl);
         try {
             if (dataSource != null) {
                 Connection conn = dataSource.getConnection();

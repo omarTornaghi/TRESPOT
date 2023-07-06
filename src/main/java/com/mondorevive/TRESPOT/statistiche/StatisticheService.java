@@ -2,7 +2,6 @@ package com.mondorevive.TRESPOT.statistiche;
 
 import com.mondorevive.TRESPOT.cauzione.statoCauzione.StatoCauzioneService;
 import com.mondorevive.TRESPOT.cauzione.statoCauzione.TipoStatoCauzione;
-import com.mondorevive.TRESPOT.cauzione.storicoCauzione.StoricoCauzione;
 import com.mondorevive.TRESPOT.cauzione.storicoCauzione.operazione.OperazioneService;
 import com.mondorevive.TRESPOT.cauzione.storicoCauzione.operazione.TipoOperazione;
 import com.mondorevive.TRESPOT.pojo.DataInizioDataFine;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,13 +28,14 @@ public class StatisticheService {
     private final StatoCauzioneService statoCauzioneService;
     private final UtenteService utenteService;
     private final OperazioneService operazioneService;
+    //NON CONSIDERARE LE CAUZIONI NON ATTIVE
     public GetDashboardDataResponse getDashboardData(String username) {
         List<Long> idStabilimentiList =
                 utenteService.getStabilimentiUtente(username).stream().map(Stabilimento::getId).toList();
         GetDashboardDataResponse response = new GetDashboardDataResponse();
-        response.setCauzioniTotali(statisticheCauzioneRepository.countCauzioni());
+        response.setCauzioniTotali(statisticheCauzioneRepository.countCauzioni(statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId()));
         response.setCauzioniMagazzino(statisticheCauzioneRepository.countCauzioniLibere(idStabilimentiList,statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO).getId()));
-        response.setCauzioniClienti(statisticheCauzioneRepository.countCauzioniFuori(idStabilimentiList));
+        response.setCauzioniClienti(statisticheCauzioneRepository.countCauzioniFuori(idStabilimentiList,statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId()));
         response.setCauzioniInManutenzione(statisticheCauzioneRepository.countCauzioniManutenzione(idStabilimentiList,statoCauzioneService.getByTipo(TipoStatoCauzione.IN_MANUTENZIONE).getId()));
         response.setCauzioniInRiparazione(statisticheCauzioneRepository.countCauzioniRiparazione(idStabilimentiList,statoCauzioneService.getByTipo(TipoStatoCauzione.IN_RIPARAZIONE).getId()));
         //Due query per ottenere il grafico
@@ -57,7 +56,7 @@ public class StatisticheService {
                 operazioneService.getByTipo(TipoOperazione.SCARICO_MANUALE).getId(),
                 idStabilimentiList
         ));
-        response.setDataTipologieCauzione(statisticheCauzioneRepository.getTipologieCauzioneChartData());
+        response.setDataTipologieCauzione(statisticheCauzioneRepository.getTipologieCauzioneChartData(statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId()));
         return response;
     }
 
@@ -66,9 +65,10 @@ public class StatisticheService {
         StatisticaTipologiaCauzione response = new StatisticaTipologiaCauzione();
         List<Long> idStabilimentiList =
                 utenteService.getStabilimentiUtente(username).stream().map(Stabilimento::getId).toList();
-        response.setTotale(statisticheCauzioneRepository.countCauzioni(idTipologiaCauzione));
+
+        response.setTotale(statisticheCauzioneRepository.countCauzioniByIdTipologiaCauzione(idTipologiaCauzione,statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId()));
         response.setDisponibili(statisticheCauzioneRepository.countCauzioniDisponibili(idStabilimentiList, idTipologiaCauzione, statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO).getId()));
-        response.setFuori(statisticheCauzioneRepository.countCauzioniFuori(idStabilimentiList,idTipologiaCauzione));
+        response.setFuori(statisticheCauzioneRepository.countCauzioniFuori(idStabilimentiList,idTipologiaCauzione,statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId()));
         response.setInManutenzione(statisticheCauzioneRepository.countCauzioniByStato(idStabilimentiList,idTipologiaCauzione, statoCauzioneService.getByTipo(TipoStatoCauzione.IN_MANUTENZIONE).getId()));
         response.setInRiparazione(statisticheCauzioneRepository.countCauzioniByStato(idStabilimentiList,idTipologiaCauzione,statoCauzioneService.getByTipo(TipoStatoCauzione.IN_RIPARAZIONE).getId()));
         response.setTipologieCauzioneMagazzinoInternoList(statisticheCauzioneRepository.getTipologieCauzioneMagazzinoInterno(idTipologiaCauzione,
@@ -76,7 +76,7 @@ public class StatisticheService {
                 statoCauzioneService.getByTipo(TipoStatoCauzione.OCCUPATO).getId(),
                 statoCauzioneService.getByTipo(TipoStatoCauzione.IN_MANUTENZIONE).getId(),
                 statoCauzioneService.getByTipo(TipoStatoCauzione.IN_RIPARAZIONE).getId()));
-        response.setTipologieCauzioneClienteList(statisticheCauzioneRepository.getStatisticaTipologiaCauzioneCliente(idTipologiaCauzione));
+        response.setTipologieCauzioneClienteList(statisticheCauzioneRepository.getStatisticaTipologiaCauzioneCliente(idTipologiaCauzione,statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId()));
         return response;
     }
 
@@ -85,7 +85,7 @@ public class StatisticheService {
         StatisticaCauzioniAttiveResponse response = new StatisticaCauzioniAttiveResponse();
         response.setAcquistiCauzioniDataList(statisticheCauzioneRepository.getAcquistiCauzioniData());
         Map<String,Long>map = new HashMap<>();
-        List<UltimoStorico> ultimiStorici = statisticheCauzioneRepository.getUltimiStorici();
+        List<UltimoStorico> ultimiStorici = statisticheCauzioneRepository.getUltimiStorici(statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId());
         for(UltimoStorico ultimoStorico : ultimiStorici){
             //In che range è?
             String key;
@@ -110,14 +110,14 @@ public class StatisticheService {
 
     @Transactional(readOnly = true)
     public List<DettaglioCauzioniAttive> getDettaglioCauzioniAttive(Long da, Long a) {
-        return statisticheCauzioneRepository.getDettaglioCauzioniAttive(da,a);
+        return statisticheCauzioneRepository.getDettaglioCauzioniAttive(da,a,statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId());
     }
 
     @Transactional(readOnly = true)
     public StatisticaRevisioniResponse getStatisticaRevisioniResponse(String dataInizio, String dataFine){
         DataInizioDataFine dataInizioDataFine = DateUtils.getDataInizioDataFine(dataInizio, dataFine);
         StatisticaRevisioniResponse response = new StatisticaRevisioniResponse();
-        response.setCauzioniTotali(statisticheCauzioneRepository.countCauzioni());
+        response.setCauzioniTotali(statisticheCauzioneRepository.countCauzioni(statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId()));
         DatiRevisioni datiRevisioni =
                 statisticheCauzioneRepository.getDatiRevisioni(dataInizioDataFine.getDataInizio(),
                         dataInizioDataFine.getDataFine());

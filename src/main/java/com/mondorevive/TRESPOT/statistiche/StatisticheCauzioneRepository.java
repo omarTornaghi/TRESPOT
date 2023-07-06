@@ -12,16 +12,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StatisticheCauzioneRepository extends JpaRepository<Cauzione, Long> {
-    @Query("select count(c) from Cauzione c")
-    Long countCauzioni();
+    @Query("select count(c) from Cauzione c where c.statoCauzione.id <> :idNonAttiva")
+    Long countCauzioni(Long idNonAttiva);
 
     @Query("select count(c) from Cauzione c " +
             "where c.magazzino.stabilimento.id in :idStabilimentiList and c.statoCauzione.id = :idLibero")
     Long countCauzioniLibere(List<Long> idStabilimentiList, Long idLibero);
 
     @Query("select count(c) from Cauzione c " +
-            "where c.magazzino.stabilimento.id not in :idStabilimentiList")
-    Long countCauzioniFuori(List<Long>idStabilimentiList);
+            "where c.magazzino.stabilimento.id not in :idStabilimentiList and c.statoCauzione.id <> :idNonAttiva")
+    Long countCauzioniFuori(List<Long>idStabilimentiList, Long idNonAttiva);
 
     @Query("select count(c) from Cauzione c " +
             "where c.magazzino.stabilimento.id in :idStabilimentiList and c.statoCauzione.id = :idLibero")
@@ -56,22 +56,23 @@ public interface StatisticheCauzioneRepository extends JpaRepository<Cauzione, L
 
     @Query("select new com.mondorevive.TRESPOT.responses.ChartDataTipologieCauzione(tc.descrizione,count(c)) " +
             "from Cauzione c inner join c.tipologiaCauzione tc " +
+            "where c.statoCauzione.id <> :idNonAttivo " +
             "group by tc.id,tc.codice,tc.descrizione " +
             "order by count(c) desc")
-    List<ChartDataTipologieCauzione> getTipologieCauzioneChartData();
+    List<ChartDataTipologieCauzione> getTipologieCauzioneChartData(Long idNonAttivo);
 
     @Query("select new com.mondorevive.TRESPOT.responses.StatisticaTipologiaCauzioneCliente(m.id,m.descrizione,count(c.id)) " +
             "from Cauzione c " +
             "inner join c.magazzino m " +
             "inner join m.cliente cl " +
-            "where c.tipologiaCauzione.id = :idTipologiaCauzione " +
+            "where c.tipologiaCauzione.id = :idTipologiaCauzione and c.statoCauzione.id <> :idNonAttivo " +
             "group by m.id,m.descrizione " +
             "order by count(c.id) desc")
-    List<StatisticaTipologiaCauzioneCliente> getStatisticaTipologiaCauzioneCliente(Long idTipologiaCauzione);
+    List<StatisticaTipologiaCauzioneCliente> getStatisticaTipologiaCauzioneCliente(Long idTipologiaCauzione, Long idNonAttivo);
 
     //PER STATISTICHE TIPOLOGIA CAUZIONE
-    @Query("select count(c) from Cauzione c  where c.tipologiaCauzione.id = :idTipologiaCauzione")
-    Long countCauzioni(Long idTipologiaCauzione);
+    @Query("select count(c) from Cauzione c  where c.tipologiaCauzione.id = :idTipologiaCauzione and c.statoCauzione.id <> :idNonAttivo")
+    Long countCauzioniByIdTipologiaCauzione(Long idTipologiaCauzione, Long idNonAttivo);
 
     @Query("select count(c) " +
             "from Cauzione c " +
@@ -82,8 +83,9 @@ public interface StatisticheCauzioneRepository extends JpaRepository<Cauzione, L
     Long countCauzioniDisponibili(List<Long> idStabilimentiList, Long idTipologiaCauzione, Long idLibero);
     @Query("select count(c) from Cauzione c " +
             "where c.magazzino.stabilimento.id not in :idStabilimentiList and " +
-            "c.tipologiaCauzione.id = :idTipologiaCauzione")
-    Long countCauzioniFuori(List<Long> idStabilimentiList, Long idTipologiaCauzione);
+            "c.tipologiaCauzione.id = :idTipologiaCauzione and " +
+            "c.statoCauzione.id <> :idNonAttivo")
+    Long countCauzioniFuori(List<Long> idStabilimentiList, Long idTipologiaCauzione,Long idNonAttivo);
 
     @Query("select count(c) from Cauzione c " +
             "where c.magazzino.stabilimento.id in :idStabilimentiList and " +
@@ -117,11 +119,12 @@ public interface StatisticheCauzioneRepository extends JpaRepository<Cauzione, L
     List<StatisticaAcquistiCauzioniDataResponse> getAcquistiCauzioniData();
 
     @Query(name = "get_ultima_operazione", nativeQuery = true)
-    List<UltimoStorico>getUltimiStorici();
+    List<UltimoStorico>getUltimiStorici(@Param("idNonAttivo")Long idNonAttivo);
 
     @Query(name = "get_dettaglio_stato_cauzioni", nativeQuery = true)
     List<DettaglioCauzioniAttive> getDettaglioCauzioniAttive(@Param("da") Long da,
-                                                             @Param("a") Long a);
+                                                             @Param("a") Long a,
+                                                             @Param("idNonAttivo")Long idNonAttivo);
 
     @Query("select new com.mondorevive.TRESPOT.pojo.DatiRevisioni(" +
             "SUM(CASE WHEN r.conformitaTotale = true THEN 1 ELSE 0 END)," +

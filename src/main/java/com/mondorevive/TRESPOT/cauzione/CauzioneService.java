@@ -13,7 +13,6 @@ import com.mondorevive.TRESPOT.cliente.Cliente;
 import com.mondorevive.TRESPOT.cliente.ClienteService;
 import com.mondorevive.TRESPOT.exceptions.SistemaEsternoNotSupportedException;
 import com.mondorevive.TRESPOT.exceptions.exceptions.InvalidRequestException;
-import com.mondorevive.TRESPOT.initializer.Initializer;
 import com.mondorevive.TRESPOT.magazzino.Magazzino;
 import com.mondorevive.TRESPOT.magazzino.MagazzinoService;
 import com.mondorevive.TRESPOT.pagination.PaginationService;
@@ -23,9 +22,9 @@ import com.mondorevive.TRESPOT.pojo.UltimoCaricoCauzione;
 import com.mondorevive.TRESPOT.requests.*;
 import com.mondorevive.TRESPOT.requests.silvanoCattaneo.*;
 import com.mondorevive.TRESPOT.responses.*;
+import com.mondorevive.TRESPOT.responses.silvanoCattaneo.GetTagInfoResponse;
 import com.mondorevive.TRESPOT.responses.silvanoCattaneo.ValidateResponse;
 import com.mondorevive.TRESPOT.responses.standardSelect.EntitySelect;
-import com.mondorevive.TRESPOT.responses.silvanoCattaneo.GetTagInfoResponse;
 import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.SistemaEsterno;
 import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.SistemaEsternoProvider;
 import com.mondorevive.TRESPOT.stabilimento.sistemaEsterno.TipoSistemaEsterno;
@@ -266,7 +265,7 @@ public class CauzioneService {
 
     private ErroreResponse computaErroreOperazioneMandaACliente(Cauzione cauzione, Long idMagazzinoCliente) {
         switch (TipoStatoCauzione.valueOf(cauzione.getStatoCauzione().getCodice())){
-            case LIBERO,IN_MANUTENZIONE,IN_RIPARAZIONE -> {return ErroreResponse.ErrorResponse("La cauzione non è associata a bobine del cliente selezionato"); }
+            case LIBERO,IN_MANUTENZIONE,IN_RIPARAZIONE,NON_ATTIVA -> {return ErroreResponse.ErrorResponse("La cauzione non è associata a bobine del cliente selezionato"); }
             default -> {
                 List<Bobina> bobineAssociate = bobinaService.getBobineAssociate(cauzione.getId());
                 if(bobineAssociate.size() == 0) return ErroreResponse.ErrorResponse("La cauzione non ha associato nessuna bobina del cliente selezionato");
@@ -348,7 +347,7 @@ public class CauzioneService {
 
     private boolean verificaClienteBobineAssociate(Cauzione cauzione, Long idCliente) {
         switch (TipoStatoCauzione.valueOf(cauzione.getStatoCauzione().getCodice())){
-            case LIBERO,IN_MANUTENZIONE,IN_RIPARAZIONE -> {
+            case LIBERO,IN_MANUTENZIONE,IN_RIPARAZIONE,NON_ATTIVA -> {
                 return false;
             }
             default -> { //Sono OCCUPATO
@@ -538,14 +537,10 @@ public class CauzioneService {
         //Se non ho processato alcuni trespoli li metto nella response aggiungendoli con errore NON_TROVATO
         List<String> trespoliNonTrovati =
                 request.getEpcTagList().stream().filter(x -> cauzioneList.stream().filter(y -> y.getEpcTag().equals(x)).findFirst().isEmpty()).toList();
-        System.out.println("Trespoli non trovati: ");
-        trespoliNonTrovati.forEach(System.out::println);
         trespoliNonTrovati.forEach(x -> out.add(new ValidateResponse(x,"TAG_NON_ASSOCIATO",true,"Il Tag non è associato ad alcun bancale")));
     }
 
     public ValidateResponse tagInitialize(TagInitializeRequest request) {
-        String s = DateUtils.fromLocalDateTimeToItalianStringPattern(request.getPurchaseDate());
-        System.out.println("s = " + s);
         Magazzino magazzino = magazzinoService.getById(request.getSiteId());
         StatoCauzione statoCauzione = statoCauzioneService.getByTipo(TipoStatoCauzione.LIBERO);
         Cauzione cauzione = new Cauzione(request.getEpcTagId(),request.getPalletCode(),request.getPurchaseDate(),tipologiaCauzioneService.getByCodice("ITR#" + request.getEmbyonPalletCode()),magazzino,statoCauzione);

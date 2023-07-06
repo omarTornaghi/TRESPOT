@@ -27,7 +27,8 @@ import java.time.LocalDateTime;
                 "sc.timestamp_operazione as timestampOperazione,\n" +
                 "c.timestamp_acquisto as timestampAcquisto,\n" +
                 "DATE_PART('year', AGE(CURRENT_DATE, sc.timestamp_operazione)) AS years\n" +
-                "from storico_cauzione sc inner join cauzione c on sc.cauzione_id = c.id\n" +
+                "from storico_cauzione sc inner join cauzione c on sc.cauzione_id = c.id\n " +
+                "where c.stato_cauzione_id <> :idNonAttivo " +
                 "order by sc.cauzione_id, sc.timestamp_operazione desc;",
         resultSetMapping = "get_ultima_operazione_mapping")
 @SqlResultSetMapping(
@@ -50,6 +51,7 @@ import java.time.LocalDateTime;
                 "\ttc.id as tipologia_id,\n" +
                 "\ttc.codice as tipologia_codice,\n" +
                 "\ttc.descrizione as tipologia_descrizione,\n" +
+                "\tc.stato_cauzione_id as stato_cauzione_id,\n" +
                 "\tDATE_PART('year', AGE(CURRENT_DATE, sc.timestamp_operazione)) AS years\n" +
                 "\tfrom storico_cauzione sc \n" +
                 "\tinner join cauzione c on sc.cauzione_id = c.id\n" +
@@ -60,7 +62,7 @@ import java.time.LocalDateTime;
                 "    tipologia_id,tipologia_codice,tipologia_descrizione,count(*) as count\n" +
                 "FROM \n" +
                 "    cauzione_ultima_op\n" +
-                "WHERE years BETWEEN :da AND :a\n" +
+                "WHERE (years BETWEEN :da AND :a) AND stato_cauzione_id <> :idNonAttivo\n" +
                 "GROUP BY tipologia_id,tipologia_codice,tipologia_descrizione\n" +
                 "ORDER BY count DESC;",
         resultSetMapping = "get_dettaglio_stato_cauzioni_mapping")
