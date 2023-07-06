@@ -1,9 +1,11 @@
 package com.mondorevive.TRESPOT.cauzione.storicoCauzione;
 
 import com.mondorevive.TRESPOT.pojo.UltimoCaricoCauzione;
+import com.mondorevive.TRESPOT.pojo.UltimoStorico;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,4 +35,9 @@ public interface StoricoCauzioneRepository extends JpaRepository<StoricoCauzione
 
     @Modifying @Query("update StoricoCauzione sc set sc.statoCauzione.id = :idStato where sc.id in (select r.storicoCauzione.id from Revisione r where r.id = :idRevisione)")
     void updateStatoStoricoByRevisioneId(Long idRevisione, Long idStato);
+
+    @Query(name = "get_ultima_operazione", nativeQuery = true)
+    List<UltimoStorico>getUltimiStorici(@Param("idNonAttivo")Long idNonAttivo);
+
+
 }

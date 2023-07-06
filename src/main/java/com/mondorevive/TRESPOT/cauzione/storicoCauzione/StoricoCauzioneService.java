@@ -6,6 +6,8 @@ import com.mondorevive.TRESPOT.bobina.bobinaStoricoCauzione.BobinaStoricoCauzion
 import com.mondorevive.TRESPOT.bobina.bobinaStoricoCauzione.BobinaStoricoCauzioneService;
 import com.mondorevive.TRESPOT.cauzione.Cauzione;
 import com.mondorevive.TRESPOT.cauzione.statoCauzione.StatoCauzione;
+import com.mondorevive.TRESPOT.cauzione.statoCauzione.StatoCauzioneService;
+import com.mondorevive.TRESPOT.cauzione.statoCauzione.TipoStatoCauzione;
 import com.mondorevive.TRESPOT.cauzione.storicoCauzione.operazione.OperazioneService;
 import com.mondorevive.TRESPOT.cauzione.storicoCauzione.operazione.TipoOperazione;
 import com.mondorevive.TRESPOT.magazzino.Magazzino;
@@ -13,6 +15,7 @@ import com.mondorevive.TRESPOT.pianoRevisione.revisione.Revisione;
 import com.mondorevive.TRESPOT.pianoRevisione.revisione.RevisioneService;
 import com.mondorevive.TRESPOT.pojo.DataInizioDataFine;
 import com.mondorevive.TRESPOT.pojo.UltimoCaricoCauzione;
+import com.mondorevive.TRESPOT.pojo.UltimoStorico;
 import com.mondorevive.TRESPOT.utente.Utente;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,7 @@ public class StoricoCauzioneService {
     private final OperazioneService operazioneService;
     private final RevisioneService revisioneService;
     private final BobinaService bobinaService;
+    private final StatoCauzioneService statoCauzioneService;
     private void salva(StoricoCauzione storicoCauzione){storicoCauzioneRepository.save(storicoCauzione); }
 
     public void aggiungiStorico(Cauzione cauzione, StatoCauzione statoCauzione, Magazzino magazzino, Utente utente, TipoOperazione tipoOperazione, Revisione revisione){
@@ -81,5 +85,10 @@ public class StoricoCauzioneService {
 
     public void updateStatoStoricoByRevisioneId(Long idRevisione, Long idStato) {
         storicoCauzioneRepository.updateStatoStoricoByRevisioneId(idRevisione,idStato);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UltimoStorico> getUltimiStorici() {
+        return storicoCauzioneRepository.getUltimiStorici(statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId());
     }
 }

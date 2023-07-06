@@ -19,6 +19,7 @@ import com.mondorevive.TRESPOT.pagination.PaginationService;
 import com.mondorevive.TRESPOT.pianoRevisione.PianoRevisioneService;
 import com.mondorevive.TRESPOT.pianoRevisione.revisione.Revisione;
 import com.mondorevive.TRESPOT.pojo.UltimoCaricoCauzione;
+import com.mondorevive.TRESPOT.pojo.UltimoStorico;
 import com.mondorevive.TRESPOT.requests.*;
 import com.mondorevive.TRESPOT.requests.silvanoCattaneo.*;
 import com.mondorevive.TRESPOT.responses.*;
@@ -592,5 +593,13 @@ public class CauzioneService {
     @Transactional(readOnly = true)
     public List<Cauzione> getTrespoliImportati(List<String> epcTagList) {
         return cauzioneRepository.getAllByEpcTagList(epcTagList);
+    }
+
+    public void ricercaEDisattivaTrespoli() {
+        //Trovo i trespoli che hanno ultima movimentazione maggiore o uguale a 5 anni
+        List<UltimoStorico> ultimiStorici = storicoCauzioneService.getUltimiStorici();
+        List<Long> idCauzioniDaDisattivare =
+                ultimiStorici.stream().filter(x -> x.getAnniDiff() >= 5.00).map(UltimoStorico::getIdCauzione).toList();
+        cauzioneRepository.disattivaCauzioni(idCauzioniDaDisattivare,statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId());
     }
 }

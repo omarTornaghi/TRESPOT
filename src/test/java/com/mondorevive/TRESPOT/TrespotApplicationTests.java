@@ -1,7 +1,9 @@
 package com.mondorevive.TRESPOT;
 
+import com.mondorevive.TRESPOT.cauzione.CauzioneService;
 import com.mondorevive.TRESPOT.utils.DateUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.time.temporal.TemporalAdjusters;
 
 @SpringBootTest
 class TrespotApplicationTests {
+	@Autowired
+	private CauzioneService cauzioneService;
 
 	@Test
 	void contextLoads() {
@@ -31,5 +35,10 @@ class TrespotApplicationTests {
 		LocalDateTime dataFine = now.with(TemporalAdjusters.lastDayOfMonth()).toLocalDate().atStartOfDay();
 		System.out.println(dataInizio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		System.out.println(dataFine.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+	}
+
+	@Test
+	void testDisattivazioneAutomatica(){
+		cauzioneService.ricercaEDisattivaTrespoli();
 	}
 }
