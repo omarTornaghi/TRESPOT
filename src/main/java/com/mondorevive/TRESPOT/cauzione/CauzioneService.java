@@ -161,9 +161,10 @@ public class CauzioneService {
 
     @Transactional(readOnly = true)
     public Optional<Cauzione> getSezioneDatiCauzioneByText(String text){
-        Optional<Cauzione> sezioneDatiCauzioneByEpcTag = getSezioneDatiCauzioneByEpcTag(text);
+        if(text == null) return Optional.empty();
+        Optional<Cauzione> sezioneDatiCauzioneByEpcTag = getSezioneDatiCauzioneByEpcTag(text.toUpperCase());
         if(sezioneDatiCauzioneByEpcTag.isPresent())return sezioneDatiCauzioneByEpcTag;
-        return getSezioneDatiCauzioneByMatricola(text);
+        return getSezioneDatiCauzioneByMatricola(text.toUpperCase());
     }
 
     @Transactional(readOnly = true)
@@ -467,7 +468,7 @@ public class CauzioneService {
 
     public GetTagInfoResponse getTagInfo(String epcTag) {
         //NB. Utilizzato da SW SILVANO CATTANEO
-        Cauzione cauzione = getSezioneDatiCauzioneByText(epcTag).orElseThrow(() -> new EntityNotFoundException("Cauzione " + epcTag + " non trovata"));
+        Cauzione cauzione = getSezioneDatiCauzioneByText(epcTag.toUpperCase()).orElseThrow(() -> new EntityNotFoundException("Cauzione " + epcTag + " non trovata"));
         Optional<Revisione> ultimaRevisione = storicoCauzioneService.getUltimaRevisione(cauzione.getId());
         return new GetTagInfoResponse(cauzione.getMatricola(),cauzione.getTipologiaCauzione().getCodiceTerminalino(),
                 cauzione.getTimestampAcquisto(), ultimaRevisione.map(Revisione::getDataRevisione).orElse(null),
