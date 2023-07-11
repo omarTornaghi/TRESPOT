@@ -40,8 +40,8 @@ public interface CauzioneRepository extends JpaRepository<Cauzione, Long> {
 
     @Modifying @Query("update Cauzione c set c.epcTag = :epcTag, c.magazzino.id = :idMagazzino where c.matricola like :matricola")
     void updateCauzione(String matricola,String epcTag,Long idMagazzino);
-    @Query("select c,tc from Cauzione c inner join c.tipologiaCauzione tc where c.magazzino.id = :idMagazzino")
-    List<Cauzione> getCauzioniByIdMagazzino(Long idMagazzino);
+    @Query("select c,tc from Cauzione c inner join c.tipologiaCauzione tc where c.magazzino.id = :idMagazzino and c.statoCauzione.id <> :idNonAttiva")
+    List<Cauzione> getCauzioniByIdMagazzino(Long idMagazzino, Long idNonAttiva);
 
     @Query("select c,sc,m,tc,cc,pr " +
             "from Cauzione c " +
@@ -79,6 +79,6 @@ public interface CauzioneRepository extends JpaRepository<Cauzione, Long> {
     @Query("select c from Cauzione c where c.epcTag in :epcTagList")
     List<Cauzione> getAllByEpcTagList(List<String> epcTagList);
 
-    @Modifying @Query("update Cauzione c set c.statoCauzione.id = :idNonAttiva where c.id in :idCauzioniDaDisattivare")
+    @Modifying @Query("update Cauzione c set c.statoCauzione.id = :idNonAttiva where c.statoCauzione.id <> :idNonAttiva and c.id in :idCauzioniDaDisattivare")
     void disattivaCauzioni(List<Long> idCauzioniDaDisattivare, Long idNonAttiva);
 }

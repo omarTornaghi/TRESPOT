@@ -141,7 +141,7 @@ public class CauzioneService {
 
     @Transactional(readOnly = true)
     public List<Cauzione> getCauzioneListByIdMagazzino(Long idMagazzino) {
-        return cauzioneRepository.getCauzioniByIdMagazzino(idMagazzino);
+        return cauzioneRepository.getCauzioniByIdMagazzino(idMagazzino, statoCauzioneService.getByTipo(TipoStatoCauzione.NON_ATTIVA).getId());
     }
 
     @Transactional(readOnly = true)
@@ -299,6 +299,7 @@ public class CauzioneService {
         scaricaCauzioni(request,username,false);
     }
     private void scaricaCauzioni(List<ScaricaRequest> request, String username, Boolean libera){
+        //TODO GESTIRE OPERAZIONE LIBERA IN MANIERA DIVERSA(rimuoviBobineAssociateSeNecessario è sbagliato)
         Utente utente = utenteService.findUserByUsername(username);
         List<ScaricaRequest> cauzioniDaScaricareELiberare =
                 request.stream().filter(x -> x.getErrore() == null || !x.getErrore().isTipoError()).toList();
